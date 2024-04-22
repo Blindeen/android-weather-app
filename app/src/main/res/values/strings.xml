@@ -1,0 +1,35 @@
+<resources>
+    <!-- Basic app data !-->
+    <string name="app_name">Weather App</string>
+    <string name="weather_conditions">Weather conditions</string>
+    <string name="city_name_input_placeholder">City name</string>
+
+    <!-- Icons !-->
+    <string name="refresh_icon">\u27F3</string>
+
+    <!-- Basic weather mockup data !-->
+    <string name="city_name">Warsaw</string>
+    <string name="timestamp">Mon June 17</string>
+    <string name="weather_description">Cloudy</string>
+    <string name="temperature">25\u00B0C</string>
+    <string name="pressure">1013mb</string>
+
+    <!-- Additional weather mockup data !-->
+    <string name="wind_speed">12 km/h</string>
+    <string name="humidity">18%</string>
+    <string name="wind_direction">NW</string>
+    <string name="visibility">10km</string>
+
+    <!-- Units !-->
+    <string name="degrees">\u00B0</string>
+    <string name="celsius">\u00B0C</string>
+    <string name="fahrenheit">\u00B0F</string>
+    <string name="pressure_unit">mb</string>
+    <string name="metric">M</string>
+    <string name="imperial">I</string>
+
+    <!-- Tab names !-->
+    <string name="basic_weather_data">Basic</string>
+    <string name="additional_weather_data">Additional</string>
+    <string name="forecast">Forecast</string>
+</resources>
