@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
@@ -13,6 +14,16 @@ import androidx.lifecycle.ViewModelProvider;
 import com.project.weatherapp.AppContext;
 import com.project.weatherapp.R;
 import com.project.weatherapp.dto.forecast.ForecastResponseDto;
+import com.project.weatherapp.dto.forecast.SingleTimestampDto;
+import com.project.weatherapp.enums.Unit;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class WeatherForecastFragment extends BasicWeatherDataFragment {
     public WeatherForecastFragment() {
@@ -39,18 +50,53 @@ public class WeatherForecastFragment extends BasicWeatherDataFragment {
     }
 
     private void setForecastData(View view, ForecastResponseDto response) {
+        Map<LocalDate, Integer> averageTemperatureByDate = prepareForecastData(response);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("E");
+        String temperatureUnit = unit == Unit.METRIC ? getString(R.string.celsius) : getString(R.string.fahrenheit);
+
         LinearLayout forecastTable = view.findViewById(R.id.forecastTable);
         if (forecastTable != null) {
-            for (int i = 0; i < forecastTable.getChildCount(); i++) {
+            int i = 0;
+            for (Map.Entry<LocalDate, Integer> entry : averageTemperatureByDate.entrySet()) {
+                LocalDate date = entry.getKey();
+                Integer temperature = entry.getValue();
+
                 LinearLayout row = (LinearLayout) forecastTable.getChildAt(i);
                 if (row != null) {
-                    //TODO: Handle filling in each row
+                    ((TextView) row.getChildAt(0)).setText(date.format(formatter));
+                    ((TextView) row.getChildAt(2)).setText(temperature.toString() + temperatureUnit);
                 }
+
+                i++;
             }
         }
     }
 
-    private void prepareForecastData(ForecastResponseDto data) {
-        //TODO: Handle response data mapping
+    private Map<LocalDate, Integer> prepareForecastData(ForecastResponseDto data) {
+        List<SingleTimestampDto> timestamps = data.getList();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        Map<LocalDate, List<SingleTimestampDto>> groupedByDate = timestamps.stream()
+                .collect(Collectors.groupingBy(dto -> LocalDateTime.parse(dto.getDt_txt(), formatter).toLocalDate(),
+                        LinkedHashMap::new, Collectors.toList()));
+
+        Map<LocalDate, Integer> averageTemperatureByDate = new LinkedHashMap<>();
+        LocalDate today = LocalDate.now();
+        for (Map.Entry<LocalDate, List<SingleTimestampDto>> entry : groupedByDate.entrySet()) {
+            LocalDate date = entry.getKey();
+            if (date.equals(today)) {
+                continue;
+            }
+
+            List<SingleTimestampDto> forecasts = entry.getValue();
+            double sumTemperature = 0.0;
+            for (SingleTimestampDto forecast : forecasts) {
+                sumTemperature += forecast.getMain().getTemp();
+            }
+
+            int averageTemperature = (int) (sumTemperature / forecasts.size());
+            averageTemperatureByDate.put(date, averageTemperature);
+        }
+
+        return averageTemperatureByDate;
     }
 }
