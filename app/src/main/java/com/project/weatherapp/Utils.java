@@ -27,8 +27,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class Utils {
-    private final static String WEATHER_DATA_FILENAME = "weather_data.json";
-
     public static <T> CompletableFuture<T> getRequest(Context context, OkHttpClient client, String url, Class<T> classType) throws IOException {
         CompletableFuture<T> future = new CompletableFuture<>();
 
@@ -45,7 +43,7 @@ public class Utils {
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String responseBody = response.body().string();
-                    saveWeatherDataJSON(context, responseBody);
+                    saveWeatherDataJSON(context, responseBody, classType.getSimpleName() + ".json");
                     T responseDto = objectMapper.readValue(responseBody, classType);
                     future.complete(responseDto);
                 } else {
@@ -77,9 +75,9 @@ public class Utils {
         return false;
     }
 
-    private static void saveWeatherDataJSON(Context context, String fileContent) {
+    private static void saveWeatherDataJSON(Context context, String fileContent, String filename) {
         try {
-            FileOutputStream fos = context.openFileOutput(WEATHER_DATA_FILENAME, Context.MODE_PRIVATE);
+            FileOutputStream fos = context.openFileOutput(filename, Context.MODE_PRIVATE);
             fos.write(fileContent.getBytes());
             fos.close();
         } catch (IOException e) {
@@ -91,7 +89,7 @@ public class Utils {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        FileInputStream fileInputStream = context.openFileInput(WEATHER_DATA_FILENAME);
+        FileInputStream fileInputStream = context.openFileInput(classType.getSimpleName() + ".json");
         InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         StringBuilder stringBuilder = new StringBuilder();
