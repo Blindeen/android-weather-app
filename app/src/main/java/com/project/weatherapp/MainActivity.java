@@ -18,6 +18,7 @@ import com.project.weatherapp.dto.forecast.ForecastResponseDto;
 import com.project.weatherapp.enums.Unit;
 import com.project.weatherapp.fragment.AdditionalWeatherDataFragment;
 import com.project.weatherapp.fragment.BasicWeatherDataFragment;
+import com.project.weatherapp.fragment.FavoriteCitiesFragment;
 import com.project.weatherapp.fragment.WeatherForecastFragment;
 
 import java.io.IOException;
@@ -196,6 +197,8 @@ public class MainActivity extends AppCompatActivity {
                     case 2:
                         fragmentTransaction.replace(R.id.fragmentContainer, WeatherForecastFragment.class, null);
                         break;
+                    case 3:
+                        fragmentTransaction.replace(R.id.fragmentContainer, FavoriteCitiesFragment.class, null);
                 }
 
                 fragmentTransaction.commit();
