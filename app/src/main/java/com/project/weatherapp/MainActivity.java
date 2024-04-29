@@ -94,7 +94,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 fetchData(null);
-                runOnUiThread(() -> displayToast(getApplicationContext(), "Data has been fetched"));
             }
         }, firstFetchDelay, FETCH_INTERVAL_MILLIS);
     }
@@ -113,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
                     appContext.setWeatherData(response);
                     this.cityName = cityName;
                     runOnUiThread(this::clearCityNameInput);
+                    runOnUiThread(() -> displayToast(getApplicationContext(), "Data has been fetched"));
                 }
                 return null;
             });
@@ -129,9 +129,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             CompletableFuture<ForecastResponseDto> weatherResponseDto = getRequest(this, new OkHttpClient(), url, ForecastResponseDto.class);
             weatherResponseDto.handle((response, ex) -> {
-                if (ex != null) {
-                    runOnUiThread(() -> displayToast(this, capitalizeString(ex.getMessage())));
-                } else {
+                if (ex == null) {
                     appContext.setForecastData(response);
                 }
                 return null;

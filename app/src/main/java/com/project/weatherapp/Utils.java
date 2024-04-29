@@ -37,6 +37,7 @@ public class Utils {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                future.completeExceptionally(new Exception("Failed to fetch data. Please check your internet connection."));
             }
 
             @Override
