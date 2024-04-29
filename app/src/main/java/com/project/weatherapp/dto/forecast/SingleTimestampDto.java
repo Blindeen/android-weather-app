@@ -2,10 +2,13 @@ package com.project.weatherapp.dto.forecast;
 
 import com.project.weatherapp.dto.WeatherDescriptionDto;
 
+import java.util.List;
+
 public class SingleTimestampDto {
     private Long dt;
     private MainForecastData main;
-    private WeatherDescriptionDto weather;
+    private List<WeatherDescriptionDto> weather;
+    private String dt_txt;
 
     public Long getDt() {
         return dt;
@@ -15,7 +18,11 @@ public class SingleTimestampDto {
         return main;
     }
 
-    public WeatherDescriptionDto getWeather() {
+    public List<WeatherDescriptionDto> getWeather() {
         return weather;
+    }
+
+    public String getDt_txt() {
+        return dt_txt;
     }
 }
