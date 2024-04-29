@@ -26,6 +26,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class WeatherForecastFragment extends BasicWeatherDataFragment {
+    private final DateTimeFormatter dayFormatter = DateTimeFormatter.ofPattern("E");
+    private final DateTimeFormatter dayTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
     public WeatherForecastFragment() {
     }
 
@@ -51,8 +54,8 @@ public class WeatherForecastFragment extends BasicWeatherDataFragment {
 
     private void setForecastData(View view, ForecastResponseDto response) {
         Map<LocalDate, Integer> averageTemperatureByDate = prepareForecastData(response);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("E");
-        String temperatureUnit = unit == Unit.METRIC ? getString(R.string.celsius) : getString(R.string.fahrenheit);
+        String temperatureUnit =
+                unit == Unit.METRIC ? getString(R.string.celsius) : getString(R.string.fahrenheit);
 
         LinearLayout forecastTable = view.findViewById(R.id.forecastTable);
         if (forecastTable != null) {
@@ -63,8 +66,8 @@ public class WeatherForecastFragment extends BasicWeatherDataFragment {
 
                 LinearLayout row = (LinearLayout) forecastTable.getChildAt(i);
                 if (row != null) {
-                    ((TextView) row.getChildAt(0)).setText(date.format(formatter));
-                    ((TextView) row.getChildAt(2)).setText(temperature.toString() + temperatureUnit);
+                    ((TextView) row.getChildAt(0)).setText(date.format(dayFormatter));
+                    ((TextView) row.getChildAt(2)).setText(String.format("%s %s", temperature, temperatureUnit));
                 }
 
                 i++;
@@ -74,9 +77,8 @@ public class WeatherForecastFragment extends BasicWeatherDataFragment {
 
     private Map<LocalDate, Integer> prepareForecastData(ForecastResponseDto data) {
         List<SingleTimestampDto> timestamps = data.getList();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         Map<LocalDate, List<SingleTimestampDto>> groupedByDate = timestamps.stream()
-                .collect(Collectors.groupingBy(dto -> LocalDateTime.parse(dto.getDt_txt(), formatter).toLocalDate(),
+                .collect(Collectors.groupingBy(dto -> LocalDateTime.parse(dto.getDt_txt(), dayTimeFormatter).toLocalDate(),
                         LinkedHashMap::new, Collectors.toList()));
 
         Map<LocalDate, Integer> averageTemperatureByDate = new LinkedHashMap<>();
