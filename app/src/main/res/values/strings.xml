@@ -33,4 +33,14 @@
     <string name="additional_weather_data">Additional</string>
     <string name="forecast">Forecast</string>
     <string name="favorites">Favorite</string>
+
+    <!-- Labels !-->
+    <string name="City">City</string>
+
+    <!-- Spinner entries !-->
+    <string-array name="spinner_entries">
+        <item>Warsaw</item>
+        <item>Barcelona</item>
+        <item>London</item>
+    </string-array>
 </resources>
