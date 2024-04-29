@@ -21,6 +21,11 @@ import com.project.weatherapp.fragment.BasicWeatherDataFragment;
 import com.project.weatherapp.fragment.WeatherForecastFragment;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
 
 import okhttp3.OkHttpClient;
@@ -28,11 +33,14 @@ import okhttp3.OkHttpClient;
 import static com.project.weatherapp.Utils.*;
 
 public class MainActivity extends AppCompatActivity {
-    private final String API_KEY = "e3b34d0b0066811dc7b89e8b72add1a7";
+    private final static long FETCH_INTERVAL_MILLIS = 900000;
+    private final static String API_KEY = "e3b34d0b0066811dc7b89e8b72add1a7";
+    private final FragmentManager fragmentManager = getSupportFragmentManager();
     private AppContext appContext;
     private String cityName = "London";
     private Unit units = Unit.METRIC;
-    private final FragmentManager fragmentManager = getSupportFragmentManager();
+    private Timer timer;
+    private LocalDateTime minimizationTimestamp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +56,42 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             Log.e("Exception", e.getMessage());
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        minimizationTimestamp = LocalDateTime.now();
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        long fetchDelay = 0;
+        if (minimizationTimestamp != null) {
+            long currentTimestampMillis = System.currentTimeMillis();
+            Instant instant = minimizationTimestamp.atZone(ZoneId.systemDefault()).toInstant();
+            long minimizationTimestampMillis = instant.toEpochMilli();
+
+            long elapsedTimeMillis = currentTimestampMillis - minimizationTimestampMillis;
+            if (elapsedTimeMillis < FETCH_INTERVAL_MILLIS) {
+                fetchDelay = FETCH_INTERVAL_MILLIS - elapsedTimeMillis;
+            }
+        }
+
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                fetchData(null);
+                runOnUiThread(() -> displayToast(getApplicationContext(), "Data has been fetched"));
+            }
+        }, fetchDelay, FETCH_INTERVAL_MILLIS);
     }
 
     public void fetchWeatherData() {
@@ -94,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void fetchData(View view) {
         fetchWeatherData();
-        fetchForecastData();
+//        fetchForecastData();
     }
 
     private void configRadioListener() {
@@ -160,9 +204,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void handleInternetConnection() throws IOException {
-        if (isNetworkAvailable(this)) {
-            fetchWeatherData();
-        } else {
+        if (!isNetworkAvailable(this)) {
             WeatherResponseDto weatherData = readWeatherDataJSON(this, WeatherResponseDto.class);
             appContext.setWeatherData(weatherData);
             displayToast(this, "No internet connection, weather data is outdated.");
