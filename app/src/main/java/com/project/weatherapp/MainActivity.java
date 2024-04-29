@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             handleInternetConnection();
         } catch (IOException e) {
-            Log.e("Exception", e.getMessage());
+            Log.e("Exception", e.toString());
         }
     }
 
@@ -111,8 +111,10 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     appContext.setWeatherData(response);
                     this.cityName = cityName;
-                    runOnUiThread(this::clearCityNameInput);
-                    runOnUiThread(() -> displayToast(getApplicationContext(), "Data has been fetched"));
+                    runOnUiThread(() -> {
+                        clearCityNameInput();
+                        displayToast(getApplicationContext(), "Data has been fetched");
+                    });
                 }
                 return null;
             });
@@ -127,8 +129,8 @@ public class MainActivity extends AppCompatActivity {
                 + "&APPID=" + API_KEY
                 + "&units=" + units;
         try {
-            CompletableFuture<ForecastResponseDto> weatherResponseDto = getRequest(this, new OkHttpClient(), url, ForecastResponseDto.class);
-            weatherResponseDto.handle((response, ex) -> {
+            CompletableFuture<ForecastResponseDto> forecastResponseDto = getRequest(this, new OkHttpClient(), url, ForecastResponseDto.class);
+            forecastResponseDto.handle((response, ex) -> {
                 if (ex == null) {
                     appContext.setForecastData(response);
                 }
