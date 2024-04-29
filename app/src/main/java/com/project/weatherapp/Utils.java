@@ -3,7 +3,7 @@ package com.project.weatherapp;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.Network;
-import android.net.NetworkCapabilities;;
+import android.net.NetworkCapabilities;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -102,5 +102,9 @@ public class Utils {
         }
 
         return objectMapper.readValue(stringBuilder.toString(), classType);
+    }
+
+    public static String capitalizeString(String text) {
+        return text != null ? text.substring(0, 1).toUpperCase() + text.substring(1) : "";
     }
 }

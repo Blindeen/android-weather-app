@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
             CompletableFuture<WeatherResponseDto> weatherResponseDto = getRequest(this, new OkHttpClient(), url, WeatherResponseDto.class);
             weatherResponseDto.handle((response, ex) -> {
                 if (ex != null) {
-                    runOnUiThread(() -> displayToast(this, ex.getMessage()));
+                    runOnUiThread(() -> displayToast(this, capitalizeString(ex.getMessage())));
                 } else {
                     appContext.setWeatherData(response);
                     this.cityName = cityName;
@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
             CompletableFuture<ForecastResponseDto> weatherResponseDto = getRequest(this, new OkHttpClient(), url, ForecastResponseDto.class);
             weatherResponseDto.handle((response, ex) -> {
                 if (ex != null) {
-                    runOnUiThread(() -> displayToast(this, ex.getMessage()));
+                    runOnUiThread(() -> displayToast(this, capitalizeString(ex.getMessage())));
                 } else {
                     appContext.setForecastData(response);
                 }
