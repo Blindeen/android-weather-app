@@ -40,8 +40,8 @@ public class AppContext extends ViewModel {
         return temperatureUnitMutableLiveData;
     }
 
-    public void setFavoriteCities(List<String> cities) {
-        favoriteCitiesMutableLiveData.setValue(cities);
+    public void addFavoriteCity(String city) {
+        favoriteCitiesMutableLiveData.getValue().add(city);
     }
 
     public LiveData<List<String>> getFavoriteCities() {
