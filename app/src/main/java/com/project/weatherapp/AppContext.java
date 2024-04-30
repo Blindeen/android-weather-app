@@ -8,10 +8,13 @@ import com.project.weatherapp.dto.currentweather.WeatherResponseDto;
 import com.project.weatherapp.dto.forecast.ForecastResponseDto;
 import com.project.weatherapp.enums.Unit;
 
+import java.util.List;
+
 public class AppContext extends ViewModel {
     private final MutableLiveData<WeatherResponseDto> weatherResponseMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<ForecastResponseDto> forecastResponseMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<Unit> temperatureUnitMutableLiveData = new MutableLiveData<>(Unit.METRIC);
+    private final MutableLiveData<List<String>> favoriteCitiesMutableLiveData = new MutableLiveData<>();
 
     public void setWeatherData(WeatherResponseDto response) {
         weatherResponseMutableLiveData.postValue(response);
@@ -35,5 +38,13 @@ public class AppContext extends ViewModel {
 
     public LiveData<Unit> getUnit() {
         return temperatureUnitMutableLiveData;
+    }
+
+    public void setFavoriteCities(List<String> cities) {
+        favoriteCitiesMutableLiveData.setValue(cities);
+    }
+
+    public LiveData<List<String>> getFavoriteCities() {
+        return favoriteCitiesMutableLiveData;
     }
 }
