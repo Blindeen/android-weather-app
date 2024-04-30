@@ -73,19 +73,21 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        long firstFetchDelay = 0;
-        if (minimizationTimestamp != null) {
-            long currentTimestampMillis = System.currentTimeMillis();
-            Instant instant = minimizationTimestamp.atZone(ZoneId.systemDefault()).toInstant();
-            long minimizationTimestampMillis = instant.toEpochMilli();
+        if (isNetworkAvailable(this)) {
+            long firstFetchDelay = 0;
+            if (minimizationTimestamp != null) {
+                long currentTimestampMillis = System.currentTimeMillis();
+                Instant instant = minimizationTimestamp.atZone(ZoneId.systemDefault()).toInstant();
+                long minimizationTimestampMillis = instant.toEpochMilli();
 
-            long elapsedTimeMillis = currentTimestampMillis - minimizationTimestampMillis;
-            if (elapsedTimeMillis < FETCH_INTERVAL_MILLIS) {
-                firstFetchDelay = FETCH_INTERVAL_MILLIS - elapsedTimeMillis;
+                long elapsedTimeMillis = currentTimestampMillis - minimizationTimestampMillis;
+                if (elapsedTimeMillis < FETCH_INTERVAL_MILLIS) {
+                    firstFetchDelay = FETCH_INTERVAL_MILLIS - elapsedTimeMillis;
+                }
             }
-        }
 
-        scheduleWeatherDataFetching(firstFetchDelay);
+            scheduleWeatherDataFetching(firstFetchDelay);
+        }
     }
 
     private void scheduleWeatherDataFetching(long firstFetchDelay) {
@@ -144,8 +146,10 @@ public class MainActivity extends AppCompatActivity {
     public void fetchData(View view) {
         fetchWeatherData();
         fetchForecastData();
-        if (view != null && timer != null) {
-            timer.cancel();
+        if (view != null) {
+            if (timer != null) {
+                timer.cancel();
+            }
             scheduleWeatherDataFetching(FETCH_INTERVAL_MILLIS);
         }
     }
