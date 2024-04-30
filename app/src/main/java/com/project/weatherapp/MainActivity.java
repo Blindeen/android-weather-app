@@ -6,7 +6,6 @@ import android.widget.EditText;
 import android.widget.RadioGroup;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -38,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private final static String API_KEY = "e3b34d0b0066811dc7b89e8b72add1a7";
     private final FragmentManager fragmentManager = getSupportFragmentManager();
     private AppContext appContext;
-    private String cityName = "London";
+    private String cityName;
     private Unit units = Unit.METRIC;
     private Timer timer;
     private LocalDateTime minimizationTimestamp;
@@ -49,11 +48,9 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        if (savedInstanceState != null) {
-            cityName = savedInstanceState.getString("cityName");
-        }
-
         appContext = new ViewModelProvider(this).get(AppContext.class);
+        appContext.getCurrentCity().observe(this, city -> cityName = city);
+
         configRadioListener();
         configTabLayoutListener();
         try {
@@ -94,12 +91,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString("cityName", cityName);
-    }
-
     private void scheduleWeatherDataFetching(long firstFetchDelay) {
         timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
@@ -122,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
                     runOnUiThread(() -> displayToast(this, capitalizeString(ex.getMessage())));
                 } else {
                     appContext.setWeatherData(response);
-                    this.cityName = cityName;
+                    appContext.setCurrentCity(cityName);
                     runOnUiThread(() -> {
                         clearCityNameInput();
                         displayToast(getApplicationContext(), "Data has been fetched");

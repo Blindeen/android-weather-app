@@ -11,12 +11,21 @@ import com.project.weatherapp.enums.Unit;
 import java.util.List;
 
 public class AppContext extends ViewModel {
+    private final MutableLiveData<String> currentCityMutableLiveData = new MutableLiveData<>("Warsaw");
     private final MutableLiveData<WeatherResponseDto> weatherResponseMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<ForecastResponseDto> forecastResponseMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<Unit> temperatureUnitMutableLiveData = new MutableLiveData<>(Unit.METRIC);
     private final MutableLiveData<List<String>> favoriteCitiesMutableLiveData = new MutableLiveData<>(
             new java.util.ArrayList<>()
     );
+
+    public void setCurrentCity(String city) {
+        currentCityMutableLiveData.postValue(city);
+    }
+
+    public LiveData<String> getCurrentCity() {
+        return currentCityMutableLiveData;
+    }
 
     public void setWeatherData(WeatherResponseDto response) {
         weatherResponseMutableLiveData.postValue(response);
