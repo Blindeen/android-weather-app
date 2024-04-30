@@ -36,7 +36,8 @@ public class FavoriteCitiesFragment extends BasicWeatherDataFragment {
         View view = getView();
         if (view != null) {
             Spinner spinner = view.findViewById(R.id.favoriteCitiesSpinner);
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                    requireContext(),
                     android.R.layout.simple_spinner_item, favoriteCities);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinner.setAdapter(adapter);
