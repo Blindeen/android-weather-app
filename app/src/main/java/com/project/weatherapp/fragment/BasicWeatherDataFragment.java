@@ -160,8 +160,9 @@ public class BasicWeatherDataFragment extends Fragment {
         if (root != null) {
             TextView cityName = root.findViewById(R.id.cityName);
             if (cityName != null) {
-                appContext.addFavoriteCity(cityName.getText().toString());
-                displayToast(getContext(), "City added to favorites!");
+                boolean additionResult = appContext.addFavoriteCity(cityName.getText().toString());
+                String message = additionResult ? "City added to favorites!" : "City is already in favorites!";
+                displayToast(getContext(), message);
             }
         }
     }
