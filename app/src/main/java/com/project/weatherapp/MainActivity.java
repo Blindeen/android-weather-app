@@ -1,7 +1,6 @@
 package com.project.weatherapp;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioGroup;
@@ -55,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             handleInternetConnection();
         } catch (IOException e) {
-            Log.e("Exception", e.toString());
+            displayToast(this, "Not able to check internet connection. Check if app has the permission");
         }
     }
 
