@@ -6,6 +6,7 @@ import android.widget.EditText;
 import android.widget.RadioGroup;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -48,6 +49,10 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
+        if (savedInstanceState != null) {
+            cityName = savedInstanceState.getString("cityName");
+        }
+
         appContext = new ViewModelProvider(this).get(AppContext.class);
         configRadioListener();
         configTabLayoutListener();
@@ -87,6 +92,12 @@ public class MainActivity extends AppCompatActivity {
 
             scheduleWeatherDataFetching(firstFetchDelay);
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("cityName", cityName);
     }
 
     private void scheduleWeatherDataFetching(long firstFetchDelay) {
