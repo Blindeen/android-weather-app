@@ -14,7 +14,9 @@ public class AppContext extends ViewModel {
     private final MutableLiveData<WeatherResponseDto> weatherResponseMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<ForecastResponseDto> forecastResponseMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<Unit> temperatureUnitMutableLiveData = new MutableLiveData<>(Unit.METRIC);
-    private final MutableLiveData<List<String>> favoriteCitiesMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<String>> favoriteCitiesMutableLiveData = new MutableLiveData<>(
+            new java.util.ArrayList<>()
+    );
 
     public void setWeatherData(WeatherResponseDto response) {
         weatherResponseMutableLiveData.postValue(response);
@@ -41,7 +43,10 @@ public class AppContext extends ViewModel {
     }
 
     public void addFavoriteCity(String city) {
-        favoriteCitiesMutableLiveData.getValue().add(city);
+        List<String> favoriteCities = favoriteCitiesMutableLiveData.getValue();
+        if (favoriteCities != null) {
+            favoriteCities.add(city);
+        }
     }
 
     public LiveData<List<String>> getFavoriteCities() {
