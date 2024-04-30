@@ -1,5 +1,7 @@
 package com.project.weatherapp.fragment;
 
+import static com.project.weatherapp.Utils.displayToast;
+
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
@@ -25,34 +27,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.TimeZone;
 
 public class BasicWeatherDataFragment extends Fragment {
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    private String mParam1;
-    private String mParam2;
     protected Unit unit = Unit.METRIC;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("E MMM dd");
     protected AppContext appContext;
 
     public BasicWeatherDataFragment() {
-    }
-
-    public static BasicWeatherDataFragment newInstance(String param1, String param2) {
-        BasicWeatherDataFragment fragment = new BasicWeatherDataFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -68,6 +47,9 @@ public class BasicWeatherDataFragment extends Fragment {
         appContext = new ViewModelProvider(requireActivity()).get(AppContext.class);
         appContext.getUnit().observe(getViewLifecycleOwner(), value -> unit = value);
         appContext.getWeatherData().observe(getViewLifecycleOwner(), this::updateUI);
+
+        TextView addToFavorites = view.findViewById(R.id.addToFavorites);
+        addToFavorites.setOnClickListener(this::addFavoriteCityOnClick);
     }
 
     private void updateUI(WeatherResponseDto response) {
@@ -170,6 +152,17 @@ public class BasicWeatherDataFragment extends Fragment {
                 break;
         }
 
-        return ContextCompat.getDrawable(getContext(), drawableID);
+        return ContextCompat.getDrawable(requireContext(), drawableID);
+    }
+
+    public void addFavoriteCityOnClick(View view) {
+        View root = getView();
+        if (root != null) {
+            TextView cityName = root.findViewById(R.id.cityName);
+            if (cityName != null) {
+                appContext.addFavoriteCity(cityName.getText().toString());
+                displayToast(getContext(), "City added to favorites!");
+            }
+        }
     }
 }
