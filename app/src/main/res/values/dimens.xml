@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="tab_font_size">15sp</dimen>
+    <dimen name="standard_font_size">20sp</dimen>
+    <dimen name="h1_font_size">25sp</dimen>
+</resources>
