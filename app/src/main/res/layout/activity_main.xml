@@ -25,6 +25,7 @@
             android:background="@color/old_navy_navy_blue_hoodie"
             app:tabIndicatorColor="@android:color/holo_blue_light"
             app:tabSelectedTextColor="@android:color/holo_blue_light"
+            app:tabTextAppearance="@style/CustomTabItem"
             app:tabTextColor="@color/white">
 
             <com.google.android.material.tabs.TabItem
@@ -89,7 +90,8 @@
                     android:checked="false"
                     android:gravity="center"
                     android:text="@string/metric"
-                    android:textColor="#FFFFFF" />
+                    android:textColor="#FFFFFF"
+                    android:textSize="@dimen/tab_font_size" />
 
                 <RadioButton
                     android:id="@+id/fahrenheitRadio"
@@ -98,7 +100,8 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:text="@string/imperial"
-                    android:textColor="#FFFFFF" />
+                    android:textColor="#FFFFFF"
+                    android:textSize="@dimen/tab_font_size" />
             </RadioGroup>
 
             <EditText
@@ -110,7 +113,8 @@
                 android:hint="@string/city_name_input_placeholder"
                 android:inputType="text"
                 android:textColor="#FFFFFF"
-                android:textColorHint="@android:color/darker_gray" />
+                android:textColorHint="@android:color/darker_gray"
+                android:textSize="@dimen/tab_font_size" />
 
             <TextView
                 android:id="@+id/refreshButton"
@@ -122,7 +126,7 @@
                 android:text="@string/refresh_icon"
                 android:textAlignment="center"
                 android:textColor="#FFFFFF"
-                android:textSize="34sp" />
+                android:textSize="@dimen/icon_size" />
         </LinearLayout>
     </LinearLayout>
 
