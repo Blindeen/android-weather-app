@@ -4,4 +4,5 @@
     <dimen name="standard_font_size">40sp</dimen>
     <dimen name="h1_font_size">45sp</dimen>
     <dimen name="icon_size">40sp</dimen>
+    <dimen name="image_size">175sp</dimen>
 </resources>

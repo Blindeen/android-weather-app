@@ -68,8 +68,8 @@
 
             <ImageView
                 android:id="@+id/weatherImage"
-                android:layout_width="150dp"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/image_size"
+                android:layout_height="@dimen/image_size"
                 android:adjustViewBounds="true"
                 android:contentDescription="@string/weather_conditions"
                 android:scaleType="fitCenter"
