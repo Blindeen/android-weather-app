@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="tab_font_size">20sp</dimen>
-    <dimen name="standard_font_size">40sp</dimen>
-    <dimen name="h1_font_size">45sp</dimen>
+    <dimen name="standard_font_size">25sp</dimen>
+    <dimen name="h1_font_size">35sp</dimen>
     <dimen name="icon_size">40sp</dimen>
     <dimen name="image_size">175sp</dimen>
 </resources>
