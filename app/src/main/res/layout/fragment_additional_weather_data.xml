@@ -40,7 +40,7 @@
                 android:layout_weight="0.5"
                 android:text="@string/wind_speed"
                 android:textColor="@color/white"
-                android:textSize="16sp" />
+                android:textSize="@dimen/standard_font_size" />
         </LinearLayout>
 
         <LinearLayout
@@ -69,7 +69,7 @@
                 android:layout_weight="0.5"
                 android:text="@string/wind_direction"
                 android:textColor="@color/white"
-                android:textSize="16sp" />
+                android:textSize="@dimen/standard_font_size" />
         </LinearLayout>
 
         <LinearLayout
@@ -98,7 +98,7 @@
                 android:layout_weight="0.5"
                 android:text="@string/humidity"
                 android:textColor="@color/white"
-                android:textSize="16sp" />
+                android:textSize="@dimen/standard_font_size" />
         </LinearLayout>
 
         <LinearLayout
@@ -127,7 +127,7 @@
                 android:layout_weight="0.5"
                 android:text="@string/visibility"
                 android:textColor="@color/white"
-                android:textSize="16sp" />
+                android:textSize="@dimen/standard_font_size" />
         </LinearLayout>
 
     </LinearLayout>

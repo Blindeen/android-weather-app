@@ -27,15 +27,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Tue"
+                android:textAlignment="center"
                 android:textColor="@color/white"
-                android:textSize="20sp" />
-
-            <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="65dp"
-                android:layout_height="65dp"
-                android:layout_weight="1"
-                android:src="@drawable/weather_13d" />
+                android:textSize="@dimen/standard_font_size" />
 
             <TextView
                 android:id="@+id/textView6"
@@ -43,9 +37,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/temperature"
-                android:textAlignment="textEnd"
+                android:textAlignment="center"
                 android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:textSize="@dimen/standard_font_size" />
         </LinearLayout>
 
         <LinearLayout
@@ -61,15 +55,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Wed"
+                android:textAlignment="center"
                 android:textColor="@color/white"
-                android:textSize="20sp" />
-
-            <ImageView
-                android:id="@+id/imageView2"
-                android:layout_width="65dp"
-                android:layout_height="65dp"
-                android:layout_weight="1"
-                android:src="@drawable/weather_02d" />
+                android:textSize="@dimen/standard_font_size" />
 
             <TextView
                 android:id="@+id/textView7"
@@ -77,9 +65,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/temperature"
-                android:textAlignment="textEnd"
+                android:textAlignment="center"
                 android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:textSize="@dimen/standard_font_size" />
         </LinearLayout>
 
         <LinearLayout
@@ -95,15 +83,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Thu"
+                android:textAlignment="center"
                 android:textColor="@color/white"
-                android:textSize="20sp" />
-
-            <ImageView
-                android:id="@+id/imageView3"
-                android:layout_width="65dp"
-                android:layout_height="65dp"
-                android:layout_weight="1"
-                android:src="@drawable/weather_09d" />
+                android:textSize="@dimen/standard_font_size" />
 
             <TextView
                 android:id="@+id/textView8"
@@ -111,9 +93,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/temperature"
-                android:textAlignment="textEnd"
+                android:textAlignment="center"
                 android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:textSize="@dimen/standard_font_size" />
         </LinearLayout>
 
         <LinearLayout
@@ -129,15 +111,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Fri"
+                android:textAlignment="center"
                 android:textColor="@color/white"
-                android:textSize="20sp" />
-
-            <ImageView
-                android:id="@+id/imageView4"
-                android:layout_width="65dp"
-                android:layout_height="65dp"
-                android:layout_weight="1"
-                android:src="@drawable/weather_11d" />
+                android:textSize="@dimen/standard_font_size" />
 
             <TextView
                 android:id="@+id/visibility"
@@ -145,9 +121,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/temperature"
-                android:textAlignment="textEnd"
+                android:textAlignment="center"
                 android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:textSize="@dimen/standard_font_size" />
         </LinearLayout>
 
         <LinearLayout
@@ -163,15 +139,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Sat"
+                android:textAlignment="center"
                 android:textColor="@color/white"
-                android:textSize="20sp" />
-
-            <ImageView
-                android:id="@+id/imageView5"
-                android:layout_width="65dp"
-                android:layout_height="65dp"
-                android:layout_weight="1"
-                android:src="@drawable/weather_11d" />
+                android:textSize="@dimen/standard_font_size" />
 
             <TextView
                 android:id="@+id/textView9"
@@ -179,9 +149,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/temperature"
-                android:textAlignment="textEnd"
+                android:textAlignment="center"
                 android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:textSize="@dimen/standard_font_size" />
         </LinearLayout>
 
     </LinearLayout>
