@@ -67,7 +67,7 @@ public class WeatherForecastFragment extends BasicWeatherDataFragment {
                 LinearLayout row = (LinearLayout) forecastTable.getChildAt(i);
                 if (row != null) {
                     ((TextView) row.getChildAt(0)).setText(date.format(dayFormatter));
-                    ((TextView) row.getChildAt(2)).setText(String.format("%s %s", temperature, temperatureUnit));
+                    ((TextView) row.getChildAt(1)).setText(String.format("%s %s", temperature, temperatureUnit));
                 }
 
                 i++;
