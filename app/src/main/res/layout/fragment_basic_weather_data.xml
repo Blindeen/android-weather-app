@@ -27,7 +27,7 @@
                 android:text="@string/city_name"
                 android:textColor="#FFFFFF"
                 android:textColorLink="#FFFFFF"
-                android:textSize="25sp" />
+                android:textSize="@dimen/h1_font_size" />
 
             <Space
                 android:layout_width="10sp"
@@ -40,7 +40,7 @@
                 android:clickable="true"
                 android:text="@string/star_icon"
                 android:textColor="#FFFFFF"
-                android:textSize="20sp" />
+                android:textSize="@dimen/standard_font_size" />
         </LinearLayout>
 
         <LinearLayout
@@ -56,7 +56,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/timestamp"
                 android:textColor="#FFFFFF"
-                android:textSize="20sp" />
+                android:textSize="@dimen/standard_font_size" />
         </LinearLayout>
 
         <LinearLayout
@@ -90,7 +90,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/weather_description"
                 android:textColor="#FFFFFF"
-                android:textSize="20sp" />
+                android:textSize="@dimen/standard_font_size" />
         </LinearLayout>
 
         <LinearLayout
@@ -108,7 +108,7 @@
                 android:text="@string/temperature"
                 android:textAlignment="center"
                 android:textColor="#FFFFFF"
-                android:textSize="30sp" />
+                android:textSize="@dimen/h1_font_size" />
 
             <Space
                 android:layout_width="0dp"
@@ -123,7 +123,7 @@
                 android:text="@string/pressure"
                 android:textAlignment="center"
                 android:textColor="#FFFFFF"
-                android:textSize="30sp" />
+                android:textSize="@dimen/h1_font_size" />
         </LinearLayout>
 
     </LinearLayout>
