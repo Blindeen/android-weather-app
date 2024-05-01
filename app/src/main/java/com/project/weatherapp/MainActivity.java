@@ -186,6 +186,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void configTabLayoutListener() {
         TabLayout tabLayout = findViewById(R.id.fragmentMenu);
+        if (tabLayout == null) {
+            return;
+        }
+
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
