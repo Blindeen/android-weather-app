@@ -112,14 +112,16 @@
                 android:textColor="#FFFFFF"
                 android:textColorHint="@android:color/darker_gray" />
 
-            <Button
+            <TextView
                 android:id="@+id/refreshButton"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight="0.4"
                 android:background="#00FFFFFF"
                 android:onClick="fetchData"
                 android:text="@string/refresh_icon"
+                android:textAlignment="center"
+                android:textColor="#FFFFFF"
                 android:textSize="34sp" />
         </LinearLayout>
     </LinearLayout>
