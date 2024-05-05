@@ -6,6 +6,7 @@ import android.widget.EditText;
 import android.widget.RadioGroup;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -47,12 +48,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+        restoreSavedState(savedInstanceState);
 
         appContext = new ViewModelProvider(this).get(AppContext.class);
         appContext.getCurrentCity().observe(this, city -> cityName = city);
 
         configRadioListener();
         configTabLayoutListener();
+
         try {
             handleInternetConnection();
         } catch (IOException e) {
@@ -73,7 +76,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
         if (isNetworkAvailable(this)) {
             long firstFetchDelay = 0;
             if (minimizationTimestamp != null) {
@@ -88,6 +90,25 @@ public class MainActivity extends AppCompatActivity {
             }
 
             scheduleWeatherDataFetching(firstFetchDelay);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putLong("timestamp", System.currentTimeMillis());
+        outState.putInt("selectedTab", ((TabLayout) findViewById(R.id.fragmentMenu)).getSelectedTabPosition());
+    }
+
+    private void restoreSavedState(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            long timestamp = savedInstanceState.getLong("timestamp");
+            minimizationTimestamp = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault());
+            int selectedTab = savedInstanceState.getInt("selectedTab");
+            TabLayout tabLayout = findViewById(R.id.fragmentMenu);
+            if (tabLayout != null) {
+                tabLayout.getTabAt(selectedTab).select();
+            }
         }
     }
 
