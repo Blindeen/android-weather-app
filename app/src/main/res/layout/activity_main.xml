@@ -69,7 +69,7 @@
             android:id="@+id/bottomMenu"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.1"
+            android:layout_weight="0.15"
             android:background="@color/old_navy_navy_blue_hoodie"
             android:gravity="center"
             android:orientation="horizontal">
@@ -114,7 +114,7 @@
                 android:inputType="text"
                 android:textColor="#FFFFFF"
                 android:textColorHint="@android:color/darker_gray"
-                android:textSize="@dimen/tab_font_size" />
+                android:textSize="@dimen/standard_font_size" />
 
             <TextView
                 android:id="@+id/refreshButton"
