@@ -1,6 +1,9 @@
 package com.project.weatherapp;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioGroup;
@@ -25,6 +28,9 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
@@ -36,6 +42,7 @@ import static com.project.weatherapp.Utils.*;
 public class MainActivity extends AppCompatActivity {
     private final static long FETCH_INTERVAL_MILLIS = 900000;
     private final static String API_KEY = "e3b34d0b0066811dc7b89e8b72add1a7";
+
     private final FragmentManager fragmentManager = getSupportFragmentManager();
     private AppContext appContext;
     private String cityName;
@@ -48,11 +55,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
         restoreSavedState(savedInstanceState);
-
-        appContext = new ViewModelProvider(this).get(AppContext.class);
-        appContext.getCurrentCity().observe(this, city -> cityName = city);
-
+        initializeContext();
         configRadioListener();
         configTabLayoutListener();
 
@@ -64,13 +69,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        minimizationTimestamp = LocalDateTime.now();
-        if (timer != null) {
-            timer.cancel();
-            timer = null;
-        }
+    protected void onStart() {
+        super.onStart();
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        LinkedHashSet<String> defaultValue = new LinkedHashSet<>();
+        Set<String> favoriteCities = sharedPref.getStringSet("favoriteCities", defaultValue);
+        Log.d("favoriteCities", favoriteCities.toString());
+        appContext.setFavoriteCities(new ArrayList<>(favoriteCities));
     }
 
     @Override
@@ -94,10 +99,34 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        minimizationTimestamp = LocalDateTime.now();
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putStringSet("favoriteCities", new LinkedHashSet<>(appContext.getFavoriteCities().getValue()));
+        editor.apply();
+    }
+
+    @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putLong("timestamp", System.currentTimeMillis());
         outState.putInt("selectedTab", ((TabLayout) findViewById(R.id.fragmentMenu)).getSelectedTabPosition());
+    }
+
+    private void initializeContext() {
+        appContext = new ViewModelProvider(this).get(AppContext.class);
+        appContext.getCurrentCity().observe(this, city -> cityName = city);
     }
 
     private void restoreSavedState(Bundle savedInstanceState) {
@@ -107,7 +136,10 @@ public class MainActivity extends AppCompatActivity {
             int selectedTab = savedInstanceState.getInt("selectedTab");
             TabLayout tabLayout = findViewById(R.id.fragmentMenu);
             if (tabLayout != null) {
-                tabLayout.getTabAt(selectedTab).select();
+                TabLayout.Tab tab = tabLayout.getTabAt(selectedTab);
+                if (tab != null) {
+                    tab.select();
+                }
             }
         }
     }

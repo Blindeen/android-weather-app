@@ -63,6 +63,10 @@ public class AppContext extends ViewModel {
         return true;
     }
 
+    public void setFavoriteCities(List<String> favoriteCities) {
+        favoriteCitiesMutableLiveData.setValue(favoriteCities);
+    }
+
     public LiveData<List<String>> getFavoriteCities() {
         return favoriteCitiesMutableLiveData;
     }
