@@ -74,7 +74,6 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
         LinkedHashSet<String> defaultValue = new LinkedHashSet<>();
         Set<String> favoriteCities = sharedPref.getStringSet("favoriteCities", defaultValue);
-        Log.d("favoriteCities", favoriteCities.toString());
         appContext.setFavoriteCities(new ArrayList<>(favoriteCities));
     }
 
