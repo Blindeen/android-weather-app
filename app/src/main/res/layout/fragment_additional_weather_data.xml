@@ -16,7 +16,7 @@
 
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
             android:orientation="vertical">
@@ -24,20 +24,13 @@
             <ImageView
                 android:id="@+id/imageView2"
                 android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_weight="1"
+                android:layout_height="wrap_content"
                 android:src="@drawable/wind" />
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="0.2" />
 
             <TextView
                 android:id="@+id/windSpeed"
                 android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_weight="0.5"
+                android:layout_height="wrap_content"
                 android:text="@string/wind_speed"
                 android:textColor="@color/white"
                 android:textSize="@dimen/standard_font_size" />
@@ -45,7 +38,7 @@
 
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
             android:orientation="vertical">
@@ -53,20 +46,13 @@
             <ImageView
                 android:id="@+id/imageView3"
                 android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_weight="1"
+                android:layout_height="wrap_content"
                 android:src="@drawable/compass_regular" />
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="0.2" />
 
             <TextView
                 android:id="@+id/windDirection"
                 android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_weight="0.5"
+                android:layout_height="wrap_content"
                 android:text="@string/wind_direction"
                 android:textColor="@color/white"
                 android:textSize="@dimen/standard_font_size" />
@@ -74,7 +60,7 @@
 
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
             android:orientation="vertical">
@@ -82,20 +68,13 @@
             <ImageView
                 android:id="@+id/imageView4"
                 android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_weight="1"
+                android:layout_height="wrap_content"
                 android:src="@drawable/humidity" />
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="0.2" />
 
             <TextView
                 android:id="@+id/humidity"
                 android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_weight="0.5"
+                android:layout_height="wrap_content"
                 android:text="@string/humidity"
                 android:textColor="@color/white"
                 android:textSize="@dimen/standard_font_size" />
@@ -103,7 +82,7 @@
 
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
             android:orientation="vertical">
@@ -111,20 +90,13 @@
             <ImageView
                 android:id="@+id/imageView5"
                 android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_weight="1"
+                android:layout_height="wrap_content"
                 android:src="@drawable/visibility_medical" />
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="0.2" />
 
             <TextView
                 android:id="@+id/visibility"
                 android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_weight="0.5"
+                android:layout_height="wrap_content"
                 android:text="@string/visibility"
                 android:textColor="@color/white"
                 android:textSize="@dimen/standard_font_size" />
