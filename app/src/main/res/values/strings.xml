@@ -44,4 +44,10 @@
         <item>Barcelona</item>
         <item>London</item>
     </string-array>
+
+    <!-- Icon descriptions !-->
+    <string name="wind_icon_description">Wind icon</string>
+    <string name="wind_direction_icon_description">Wind direction icon</string>
+    <string name="humidity_icon_description">Humidity icon</string>
+    <string name="visibility_icon_description">Visibility icon</string>
 </resources>
