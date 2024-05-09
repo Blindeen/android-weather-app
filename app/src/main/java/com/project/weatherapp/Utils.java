@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -44,7 +43,7 @@ public class Utils {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 ResponseBody responseBody = response.body();
-                String responseBodyString = responseBody.string();
+                String responseBodyString = responseBody != null ? responseBody.string() : "";
 
                 if (response.isSuccessful()) {
                     saveWeatherDataJSON(context, responseBodyString, classType.getSimpleName() + ".json");
@@ -85,7 +84,7 @@ public class Utils {
             fos.write(fileContent.getBytes());
             fos.close();
         } catch (IOException e) {
-            Log.e("Exception", e.getMessage());
+            displayToast(context, "Error occurred while saving weather data");
         }
     }
 
