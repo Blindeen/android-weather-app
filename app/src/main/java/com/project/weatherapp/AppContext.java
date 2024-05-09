@@ -14,7 +14,7 @@ public class AppContext extends ViewModel {
     private final MutableLiveData<String> currentCityMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<WeatherResponseDto> weatherResponseMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<ForecastResponseDto> forecastResponseMutableLiveData = new MutableLiveData<>();
-    private final MutableLiveData<Unit> temperatureUnitMutableLiveData = new MutableLiveData<>(Unit.METRIC);
+    private final MutableLiveData<Unit> temperatureUnitMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<String>> favoriteCitiesMutableLiveData = new MutableLiveData<>(
             new java.util.ArrayList<>()
     );

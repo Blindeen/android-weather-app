@@ -39,7 +39,7 @@ import okhttp3.OkHttpClient;
 import static com.project.weatherapp.Utils.*;
 
 public class MainActivity extends AppCompatActivity {
-    private final static long FETCH_INTERVAL_MILLIS = 900000;
+    private final static long FETCH_INTERVAL_MILLIS = 900000; //15 minutes
     private final static String API_KEY = "e3b34d0b0066811dc7b89e8b72add1a7";
 
     private final FragmentManager fragmentManager = getSupportFragmentManager();
@@ -81,6 +81,15 @@ public class MainActivity extends AppCompatActivity {
         appContext.setFavoriteCities(new ArrayList<>(favoriteCities));
 
         cityName = sharedPref.getString("currentCity", "Warsaw");
+
+        int currentUnitOrdinal = sharedPref.getInt("currentUnit", Unit.METRIC.ordinal());
+        units = Unit.values()[currentUnitOrdinal];
+        appContext.setUnit(units);
+        RadioGroup radioGroup = findViewById(R.id.unitsRadioGroup);
+        if (radioGroup != null) {
+            int radioButtonId = (units == Unit.METRIC) ? R.id.celsiusRadio : R.id.fahrenheitRadio;
+            radioGroup.check(radioButtonId);
+        }
     }
 
     @Override
@@ -129,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putStringSet("favoriteCities", new LinkedHashSet<>(appContext.getFavoriteCities().getValue()));
         editor.putString("currentCity", cityName);
+        editor.putInt("currentUnit", units.ordinal());
         editor.apply();
     }
 
