@@ -3,7 +3,6 @@ package com.project.weatherapp;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioGroup;
@@ -40,7 +39,7 @@ import okhttp3.OkHttpClient;
 import static com.project.weatherapp.Utils.*;
 
 public class MainActivity extends AppCompatActivity {
-    private final static long FETCH_INTERVAL_MILLIS = 900000;
+    private final static long FETCH_INTERVAL_MILLIS = 10000;
     private final static String API_KEY = "e3b34d0b0066811dc7b89e8b72add1a7";
 
     private final FragmentManager fragmentManager = getSupportFragmentManager();
@@ -56,15 +55,18 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        restoreSavedState(savedInstanceState);
         initializeContext();
         configRadioListener();
         configTabLayoutListener();
 
-        try {
-            handleInternetConnection();
-        } catch (IOException e) {
-            displayToast(this, "Not able to check internet connection. Check if app has the permission");
+        if (savedInstanceState == null) {
+            try {
+                handleInternetConnection();
+            } catch (IOException e) {
+                displayToast(this, "Not able to load old data");
+            }
+        } else {
+            restoreSavedState(savedInstanceState);
         }
     }
 
@@ -108,6 +110,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putLong("timestamp", System.currentTimeMillis());
+        outState.putInt("selectedTab", ((TabLayout) findViewById(R.id.fragmentMenu)).getSelectedTabPosition());
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
@@ -116,29 +125,20 @@ public class MainActivity extends AppCompatActivity {
         editor.apply();
     }
 
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putLong("timestamp", System.currentTimeMillis());
-        outState.putInt("selectedTab", ((TabLayout) findViewById(R.id.fragmentMenu)).getSelectedTabPosition());
-    }
-
     private void initializeContext() {
         appContext = new ViewModelProvider(this).get(AppContext.class);
         appContext.getCurrentCity().observe(this, city -> cityName = city);
     }
 
     private void restoreSavedState(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            long timestamp = savedInstanceState.getLong("timestamp");
-            minimizationTimestamp = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault());
-            int selectedTab = savedInstanceState.getInt("selectedTab");
-            TabLayout tabLayout = findViewById(R.id.fragmentMenu);
-            if (tabLayout != null) {
-                TabLayout.Tab tab = tabLayout.getTabAt(selectedTab);
-                if (tab != null) {
-                    tab.select();
-                }
+        long timestamp = savedInstanceState.getLong("timestamp");
+        int selectedTab = savedInstanceState.getInt("selectedTab");
+        minimizationTimestamp = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault());
+        TabLayout tabLayout = findViewById(R.id.fragmentMenu);
+        if (tabLayout != null) {
+            TabLayout.Tab tab = tabLayout.getTabAt(selectedTab);
+            if (tab != null) {
+                tab.select();
             }
         }
     }
