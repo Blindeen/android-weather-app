@@ -235,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
         }, firstFetchDelay, Constants.FETCH_INTERVAL_MILLIS);
     }
 
-    public void fetchWeatherData() throws IOException {
+    public void fetchWeatherData() {
         String cityName = getCityNameInputValue();
         String url = "http://api.openweathermap.org/data/2.5/weather?q=" + cityName
                 + "&appid=" + Constants.API_KEY
@@ -256,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void fetchForecastData() throws IOException {
+    private void fetchForecastData() {
         String cityName = getCityNameInputValue();
         String url = "http://api.openweathermap.org/data/2.5/forecast?q=" + cityName
                 + "&appid=" + Constants.API_KEY
@@ -271,12 +271,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void fetchData(View view) {
-        try {
-            fetchWeatherData();
-            fetchForecastData();
-        } catch (IOException e) {
-            displayToast(this, e.getMessage());
-        }
+        fetchWeatherData();
+        fetchForecastData();
 
         if (view != null) {
             if (timer != null) {

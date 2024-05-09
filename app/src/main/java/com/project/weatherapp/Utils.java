@@ -25,9 +25,10 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 public class Utils {
-    public static <T> CompletableFuture<T> getRequest(Context context, OkHttpClient client, String url, Class<T> classType) throws IOException {
+    public static <T> CompletableFuture<T> getRequest(Context context, OkHttpClient client, String url, Class<T> classType) {
         CompletableFuture<T> future = new CompletableFuture<>();
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -42,13 +43,15 @@ public class Utils {
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                ResponseBody responseBody = response.body();
+                String responseBodyString = responseBody.string();
+
                 if (response.isSuccessful()) {
-                    String responseBody = response.body().string();
-                    saveWeatherDataJSON(context, responseBody, classType.getSimpleName() + ".json");
-                    T responseDto = objectMapper.readValue(responseBody, classType);
+                    saveWeatherDataJSON(context, responseBodyString, classType.getSimpleName() + ".json");
+                    T responseDto = objectMapper.readValue(responseBodyString, classType);
                     future.complete(responseDto);
                 } else {
-                    ErrorResponseDto error = objectMapper.readValue(response.body().string(), ErrorResponseDto.class);
+                    ErrorResponseDto error = objectMapper.readValue(responseBodyString, ErrorResponseDto.class);
                     future.completeExceptionally(new Exception(error.getMessage()));
                 }
             }
@@ -58,7 +61,7 @@ public class Utils {
     }
 
     public static void displayToast(Context context, String message) {
-        Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 
     public static boolean isNetworkAvailable(Context context) {
