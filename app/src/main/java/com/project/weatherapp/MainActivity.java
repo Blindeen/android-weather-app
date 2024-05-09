@@ -39,11 +39,9 @@ import okhttp3.OkHttpClient;
 import static com.project.weatherapp.Utils.*;
 
 public class MainActivity extends AppCompatActivity {
-    private final static long FETCH_INTERVAL_MILLIS = 900000; //15 minutes
-    private final static String API_KEY = "e3b34d0b0066811dc7b89e8b72add1a7";
-
-    private final FragmentManager fragmentManager = getSupportFragmentManager();
     private AppContext appContext;
+    private SharedPreferences sharedPreferences;
+    private final FragmentManager fragmentManager = getSupportFragmentManager();
     private String cityName;
     private Unit units = Unit.METRIC;
     private Timer timer;
@@ -74,28 +72,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-
-        LinkedHashSet<String> defaultValue = new LinkedHashSet<>();
-        Set<String> favoriteCities = sharedPref.getStringSet("favoriteCities", defaultValue);
-        appContext.setFavoriteCities(new ArrayList<>(favoriteCities));
-
-        cityName = sharedPref.getString("currentCity", "Warsaw");
-
-        int currentUnitOrdinal = sharedPref.getInt("currentUnit", Unit.METRIC.ordinal());
-        units = Unit.values()[currentUnitOrdinal];
-        appContext.setUnit(units);
-        RadioGroup radioGroup = findViewById(R.id.unitsRadioGroup);
-        if (radioGroup != null) {
-            int radioButtonId = (units == Unit.METRIC) ? R.id.celsiusRadio : R.id.fahrenheitRadio;
-            radioGroup.check(radioButtonId);
+        if (sharedPreferences == null) {
+            sharedPreferences = getPreferences(Context.MODE_PRIVATE);
         }
+
+        loadFavoriteCities();
+        cityName = sharedPreferences.getString(Constants.SAVED_CITY_KEY, Constants.DEFAULT_CITY);
+        loadUnit();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
         long firstFetchDelay = 0;
         if (minimizationTimestamp != null) {
             long currentTimestampMillis = System.currentTimeMillis();
@@ -103,8 +91,8 @@ public class MainActivity extends AppCompatActivity {
             long minimizationTimestampMillis = instant.toEpochMilli();
 
             long elapsedTimeMillis = currentTimestampMillis - minimizationTimestampMillis;
-            if (elapsedTimeMillis < FETCH_INTERVAL_MILLIS) {
-                firstFetchDelay = FETCH_INTERVAL_MILLIS - elapsedTimeMillis;
+            if (elapsedTimeMillis < Constants.FETCH_INTERVAL_MILLIS) {
+                firstFetchDelay = Constants.FETCH_INTERVAL_MILLIS - elapsedTimeMillis;
             }
         }
 
@@ -114,7 +102,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-
         minimizationTimestamp = LocalDateTime.now();
         if (timer != null) {
             timer.cancel();
@@ -125,103 +112,26 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-
-        outState.putLong("timestamp", System.currentTimeMillis());
-        outState.putInt("selectedTab", ((TabLayout) findViewById(R.id.fragmentMenu)).getSelectedTabPosition());
+        outState.putLong(Constants.SAVED_TIMESTAMP_KEY, System.currentTimeMillis());
+        TabLayout tabLayout = findViewById(R.id.fragmentMenu);
+        if (tabLayout != null) {
+            outState.putInt(Constants.SAVED_TAB_KEY, tabLayout.getSelectedTabPosition());
+        }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-
-        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putStringSet("favoriteCities", new LinkedHashSet<>(appContext.getFavoriteCities().getValue()));
-        editor.putString("currentCity", cityName);
-        editor.putInt("currentUnit", units.ordinal());
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putStringSet(Constants.FAV_CITIES_KEY, new LinkedHashSet<>(appContext.getFavoriteCities().getValue()));
+        editor.putString(Constants.SAVED_CITY_KEY, cityName);
+        editor.putInt(Constants.SAVED_UNIT_KEY, units.ordinal());
         editor.apply();
     }
 
     private void initializeContext() {
         appContext = new ViewModelProvider(this).get(AppContext.class);
         appContext.getCurrentCity().observe(this, city -> cityName = city);
-    }
-
-    private void restoreSavedState(Bundle savedInstanceState) {
-        long timestamp = savedInstanceState.getLong("timestamp");
-        int selectedTab = savedInstanceState.getInt("selectedTab");
-        minimizationTimestamp = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault());
-        TabLayout tabLayout = findViewById(R.id.fragmentMenu);
-        if (tabLayout != null) {
-            TabLayout.Tab tab = tabLayout.getTabAt(selectedTab);
-            if (tab != null) {
-                tab.select();
-            }
-        }
-    }
-
-    private void scheduleWeatherDataFetching(long firstFetchDelay) {
-        timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                fetchData(null);
-            }
-        }, firstFetchDelay, FETCH_INTERVAL_MILLIS);
-    }
-
-    public void fetchWeatherData() {
-        String cityName = getCityNameInputValue();
-        String url = "http://api.openweathermap.org/data/2.5/weather?q=" + cityName
-                + "&APPID=" + API_KEY
-                + "&units=" + units;
-        try {
-            CompletableFuture<WeatherResponseDto> weatherResponseDto = getRequest(this, new OkHttpClient(), url, WeatherResponseDto.class);
-            weatherResponseDto.handle((response, ex) -> {
-                if (ex != null) {
-                    runOnUiThread(() -> displayToast(this, capitalizeString(ex.getMessage())));
-                } else {
-                    appContext.setWeatherData(response);
-                    appContext.setCurrentCity(cityName);
-                    runOnUiThread(() -> {
-                        clearCityNameInput();
-                        displayToast(getApplicationContext(), "Data has been fetched");
-                    });
-                }
-                return null;
-            });
-        } catch (IOException e) {
-            displayToast(this, e.getMessage());
-        }
-    }
-
-    private void fetchForecastData() {
-        String cityName = getCityNameInputValue();
-        String url = "http://api.openweathermap.org/data/2.5/forecast?q=" + cityName
-                + "&APPID=" + API_KEY
-                + "&units=" + units;
-        try {
-            CompletableFuture<ForecastResponseDto> forecastResponseDto = getRequest(this, new OkHttpClient(), url, ForecastResponseDto.class);
-            forecastResponseDto.handle((response, ex) -> {
-                if (ex == null) {
-                    appContext.setForecastData(response);
-                }
-                return null;
-            });
-        } catch (IOException e) {
-            displayToast(this, e.getMessage());
-        }
-    }
-
-    public void fetchData(View view) {
-        fetchWeatherData();
-        fetchForecastData();
-        if (view != null) {
-            if (timer != null) {
-                timer.cancel();
-            }
-            scheduleWeatherDataFetching(FETCH_INTERVAL_MILLIS);
-        }
     }
 
     private void configRadioListener() {
@@ -237,6 +147,145 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void configTabLayoutListener() {
+        TabLayout tabLayout = findViewById(R.id.fragmentMenu);
+        if (tabLayout != null) {
+            tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                @Override
+                public void onTabSelected(TabLayout.Tab tab) {
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+                    int position = tab.getPosition();
+                    switch (position) {
+                        case 0:
+                            fragmentTransaction.replace(R.id.fragmentContainer, BasicWeatherDataFragment.class, null);
+                            break;
+                        case 1:
+                            fragmentTransaction.replace(R.id.fragmentContainer, AdditionalWeatherDataFragment.class, null);
+                            break;
+                        case 2:
+                            fragmentTransaction.replace(R.id.fragmentContainer, WeatherForecastFragment.class, null);
+                            break;
+                        case 3:
+                            fragmentTransaction.replace(R.id.fragmentContainer, FavoriteCitiesFragment.class, null);
+                    }
+
+                    fragmentTransaction.commit();
+                }
+
+                @Override
+                public void onTabUnselected(TabLayout.Tab tab) {
+                }
+
+                @Override
+                public void onTabReselected(TabLayout.Tab tab) {
+                }
+            });
+        }
+    }
+
+    private void handleInternetConnection() throws IOException {
+        if (!isNetworkAvailable(this)) {
+            WeatherResponseDto weatherData = readWeatherDataJSON(this, WeatherResponseDto.class);
+            ForecastResponseDto forecastData = readWeatherDataJSON(this, ForecastResponseDto.class);
+            appContext.setWeatherData(weatherData);
+            appContext.setForecastData(forecastData);
+            displayToast(this, "No internet connection, weather data is outdated.");
+        }
+    }
+
+    private void restoreSavedState(Bundle savedInstanceState) {
+        long timestamp = savedInstanceState.getLong(Constants.SAVED_TIMESTAMP_KEY);
+        int selectedTab = savedInstanceState.getInt(Constants.SAVED_TAB_KEY);
+        minimizationTimestamp = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault());
+        TabLayout tabLayout = findViewById(R.id.fragmentMenu);
+        if (tabLayout != null) {
+            TabLayout.Tab tab = tabLayout.getTabAt(selectedTab);
+            if (tab != null) {
+                tab.select();
+            }
+        }
+    }
+
+    private void loadFavoriteCities() {
+        LinkedHashSet<String> defaultValue = new LinkedHashSet<>();
+        Set<String> favoriteCities = sharedPreferences.getStringSet(Constants.FAV_CITIES_KEY, defaultValue);
+        appContext.setFavoriteCities(new ArrayList<>(favoriteCities));
+    }
+
+    private void loadUnit() {
+        int currentUnitOrdinal = sharedPreferences.getInt(Constants.SAVED_UNIT_KEY, Unit.METRIC.ordinal());
+        units = Unit.values()[currentUnitOrdinal];
+        appContext.setUnit(units);
+
+        RadioGroup radioGroup = findViewById(R.id.unitsRadioGroup);
+        if (radioGroup != null) {
+            int radioButtonId = (units == Unit.METRIC) ? R.id.celsiusRadio : R.id.fahrenheitRadio;
+            radioGroup.check(radioButtonId);
+        }
+    }
+
+    private void scheduleWeatherDataFetching(long firstFetchDelay) {
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                fetchData(null);
+            }
+        }, firstFetchDelay, Constants.FETCH_INTERVAL_MILLIS);
+    }
+
+    public void fetchWeatherData() throws IOException {
+        String cityName = getCityNameInputValue();
+        String url = "http://api.openweathermap.org/data/2.5/weather?q=" + cityName
+                + "&appid=" + Constants.API_KEY
+                + "&units=" + units;
+        CompletableFuture<WeatherResponseDto> weatherResponseDto = getRequest(this, new OkHttpClient(), url, WeatherResponseDto.class);
+        weatherResponseDto.handle((response, ex) -> {
+            if (ex != null) {
+                runOnUiThread(() -> displayToast(this, capitalizeString(ex.getMessage())));
+            } else {
+                appContext.setWeatherData(response);
+                appContext.setCurrentCity(cityName);
+                runOnUiThread(() -> {
+                    clearCityNameInput();
+                    displayToast(getApplicationContext(), "Data has been fetched");
+                });
+            }
+            return null;
+        });
+    }
+
+    private void fetchForecastData() throws IOException {
+        String cityName = getCityNameInputValue();
+        String url = "http://api.openweathermap.org/data/2.5/forecast?q=" + cityName
+                + "&appid=" + Constants.API_KEY
+                + "&units=" + units;
+        CompletableFuture<ForecastResponseDto> forecastResponseDto = getRequest(this, new OkHttpClient(), url, ForecastResponseDto.class);
+        forecastResponseDto.handle((response, ex) -> {
+            if (ex == null) {
+                appContext.setForecastData(response);
+            }
+            return null;
+        });
+    }
+
+    public void fetchData(View view) {
+        try {
+            fetchWeatherData();
+            fetchForecastData();
+        } catch (IOException e) {
+            displayToast(this, e.getMessage());
+        }
+
+        if (view != null) {
+            if (timer != null) {
+                timer.cancel();
+            }
+            scheduleWeatherDataFetching(Constants.FETCH_INTERVAL_MILLIS);
+        }
+    }
+
     private String getCityNameInputValue() {
         EditText cityNameInput = findViewById(R.id.cityNameInput);
         if (cityNameInput != null && !cityNameInput.getText().toString().isEmpty()) {
@@ -250,55 +299,6 @@ public class MainActivity extends AppCompatActivity {
         EditText cityNameInput = findViewById(R.id.cityNameInput);
         if (cityNameInput != null) {
             cityNameInput.setText("");
-        }
-    }
-
-    private void configTabLayoutListener() {
-        TabLayout tabLayout = findViewById(R.id.fragmentMenu);
-        if (tabLayout == null) {
-            return;
-        }
-
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-                int position = tab.getPosition();
-                switch (position) {
-                    case 0:
-                        fragmentTransaction.replace(R.id.fragmentContainer, BasicWeatherDataFragment.class, null);
-                        break;
-                    case 1:
-                        fragmentTransaction.replace(R.id.fragmentContainer, AdditionalWeatherDataFragment.class, null);
-                        break;
-                    case 2:
-                        fragmentTransaction.replace(R.id.fragmentContainer, WeatherForecastFragment.class, null);
-                        break;
-                    case 3:
-                        fragmentTransaction.replace(R.id.fragmentContainer, FavoriteCitiesFragment.class, null);
-                }
-
-                fragmentTransaction.commit();
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-            }
-        });
-    }
-
-    private void handleInternetConnection() throws IOException {
-        if (!isNetworkAvailable(this)) {
-            WeatherResponseDto weatherData = readWeatherDataJSON(this, WeatherResponseDto.class);
-            ForecastResponseDto forecastData = readWeatherDataJSON(this, ForecastResponseDto.class);
-            appContext.setWeatherData(weatherData);
-            appContext.setForecastData(forecastData);
-            displayToast(this, "No internet connection, weather data is outdated.");
         }
     }
 }
