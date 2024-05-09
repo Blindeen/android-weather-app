@@ -11,7 +11,7 @@ import com.project.weatherapp.enums.Unit;
 import java.util.List;
 
 public class AppContext extends ViewModel {
-    private final MutableLiveData<String> currentCityMutableLiveData = new MutableLiveData<>("Warsaw");
+    private final MutableLiveData<String> currentCityMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<WeatherResponseDto> weatherResponseMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<ForecastResponseDto> forecastResponseMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<Unit> temperatureUnitMutableLiveData = new MutableLiveData<>(Unit.METRIC);

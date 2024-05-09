@@ -39,7 +39,7 @@ import okhttp3.OkHttpClient;
 import static com.project.weatherapp.Utils.*;
 
 public class MainActivity extends AppCompatActivity {
-    private final static long FETCH_INTERVAL_MILLIS = 10000;
+    private final static long FETCH_INTERVAL_MILLIS = 900000;
     private final static String API_KEY = "e3b34d0b0066811dc7b89e8b72add1a7";
 
     private final FragmentManager fragmentManager = getSupportFragmentManager();
@@ -73,35 +73,39 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+
         LinkedHashSet<String> defaultValue = new LinkedHashSet<>();
         Set<String> favoriteCities = sharedPref.getStringSet("favoriteCities", defaultValue);
         appContext.setFavoriteCities(new ArrayList<>(favoriteCities));
+
+        cityName = sharedPref.getString("currentCity", "Warsaw");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (isNetworkAvailable(this)) {
-            long firstFetchDelay = 0;
-            if (minimizationTimestamp != null) {
-                long currentTimestampMillis = System.currentTimeMillis();
-                Instant instant = minimizationTimestamp.atZone(ZoneId.systemDefault()).toInstant();
-                long minimizationTimestampMillis = instant.toEpochMilli();
 
-                long elapsedTimeMillis = currentTimestampMillis - minimizationTimestampMillis;
-                if (elapsedTimeMillis < FETCH_INTERVAL_MILLIS) {
-                    firstFetchDelay = FETCH_INTERVAL_MILLIS - elapsedTimeMillis;
-                }
+        long firstFetchDelay = 0;
+        if (minimizationTimestamp != null) {
+            long currentTimestampMillis = System.currentTimeMillis();
+            Instant instant = minimizationTimestamp.atZone(ZoneId.systemDefault()).toInstant();
+            long minimizationTimestampMillis = instant.toEpochMilli();
+
+            long elapsedTimeMillis = currentTimestampMillis - minimizationTimestampMillis;
+            if (elapsedTimeMillis < FETCH_INTERVAL_MILLIS) {
+                firstFetchDelay = FETCH_INTERVAL_MILLIS - elapsedTimeMillis;
             }
-
-            scheduleWeatherDataFetching(firstFetchDelay);
         }
+
+        scheduleWeatherDataFetching(firstFetchDelay);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+
         minimizationTimestamp = LocalDateTime.now();
         if (timer != null) {
             timer.cancel();
@@ -112,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
+
         outState.putLong("timestamp", System.currentTimeMillis());
         outState.putInt("selectedTab", ((TabLayout) findViewById(R.id.fragmentMenu)).getSelectedTabPosition());
     }
@@ -119,9 +124,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putStringSet("favoriteCities", new LinkedHashSet<>(appContext.getFavoriteCities().getValue()));
+        editor.putString("currentCity", cityName);
         editor.apply();
     }
 
