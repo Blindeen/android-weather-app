@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -74,8 +75,12 @@ public class WeatherForecastFragment extends BasicWeatherDataFragment {
 
                 LinearLayout row = (LinearLayout) forecastTable.getChildAt(i);
                 if (row != null) {
+                    int temperature = forecastElement.getTemperature();
+                    String iconName = forecastElement.getIcon();
+
                     ((TextView) row.getChildAt(0)).setText(date.format(dayFormatter));
-                    ((TextView) row.getChildAt(1)).setText(String.format("%s %s", forecastElement.getTemperature(), temperatureUnit));
+                    ((ImageView) row.getChildAt(1)).setImageDrawable(getWeatherIcon(iconName));
+                    ((TextView) row.getChildAt(2)).setText(String.format("%s %s", temperature, temperatureUnit));
                 }
 
                 i++;
@@ -105,16 +110,7 @@ public class WeatherForecastFragment extends BasicWeatherDataFragment {
                 sumTemperature += forecast.getMain().getTemp();
             }
 
-            for (SingleTimestampDto forecast : forecasts) {
-                WeatherDescriptionDto weather = forecast.getWeather();
-                String icon = weather.getIcon();
-                weatherIconHistogram.put(icon, weatherIconHistogram.getOrDefault(icon, 0) + 1);
-            }
-
-            String mostCommonIcon = weatherIconHistogram.entrySet().stream()
-                    .max(Map.Entry.comparingByValue())
-                    .map(Map.Entry::getKey)
-                    .orElse(null);
+            String mostCommonIcon = findMostCommonIcon(forecasts, weatherIconHistogram);
 
             int averageTemperature = (int) (sumTemperature / forecasts.size());
             averageTemperature = prepareTemperature(averageTemperature);
@@ -122,5 +118,18 @@ public class WeatherForecastFragment extends BasicWeatherDataFragment {
         }
 
         return dailyForecast;
+    }
+
+    private String findMostCommonIcon(List<SingleTimestampDto> forecastTimestamps, Map<String, Integer> weatherIconHistogram) {
+        for (SingleTimestampDto forecast : forecastTimestamps) {
+            WeatherDescriptionDto weather = forecast.getWeather();
+            String icon = weather.getIcon();
+            weatherIconHistogram.put(icon, weatherIconHistogram.getOrDefault(icon, 0) + 1);
+        }
+
+        return weatherIconHistogram.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
     }
 }
