@@ -63,6 +63,13 @@ public class AppState extends ViewModel {
         return true;
     }
 
+    public void removeFavoriteCity(String city) {
+        List<String> favoriteCities = favoriteCitiesMutableLiveData.getValue();
+        if (favoriteCities != null) {
+            favoriteCities.remove(city);
+        }
+    }
+
     public void setFavoriteCities(List<String> favoriteCities) {
         favoriteCitiesMutableLiveData.setValue(favoriteCities);
     }
