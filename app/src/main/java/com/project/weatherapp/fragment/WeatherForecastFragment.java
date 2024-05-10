@@ -13,6 +13,8 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.project.weatherapp.AppState;
 import com.project.weatherapp.R;
+import com.project.weatherapp.dto.ForecastElement;
+import com.project.weatherapp.dto.WeatherDescriptionDto;
 import com.project.weatherapp.dto.forecast.ForecastResponseDto;
 import com.project.weatherapp.dto.forecast.SingleTimestampDto;
 import com.project.weatherapp.enums.Unit;
@@ -59,21 +61,21 @@ public class WeatherForecastFragment extends BasicWeatherDataFragment {
     }
 
     private void setForecastData(View view, ForecastResponseDto response) {
-        Map<LocalDate, Integer> averageTemperatureByDate = prepareForecastData(response);
+        Map<LocalDate, ForecastElement> averageTemperatureByDate = prepareForecastData(response);
         String temperatureUnit =
                 unit == Unit.METRIC ? getString(R.string.celsius) : getString(R.string.fahrenheit);
 
         LinearLayout forecastTable = view.findViewById(R.id.forecastTable);
         if (forecastTable != null) {
             int i = 0;
-            for (Map.Entry<LocalDate, Integer> entry : averageTemperatureByDate.entrySet()) {
+            for (Map.Entry<LocalDate, ForecastElement> entry : averageTemperatureByDate.entrySet()) {
                 LocalDate date = entry.getKey();
-                Integer temperature = entry.getValue();
+                ForecastElement forecastElement = entry.getValue();
 
                 LinearLayout row = (LinearLayout) forecastTable.getChildAt(i);
                 if (row != null) {
                     ((TextView) row.getChildAt(0)).setText(date.format(dayFormatter));
-                    ((TextView) row.getChildAt(1)).setText(String.format("%s %s", temperature, temperatureUnit));
+                    ((TextView) row.getChildAt(1)).setText(String.format("%s %s", forecastElement.getTemperature(), temperatureUnit));
                 }
 
                 i++;
@@ -81,13 +83,15 @@ public class WeatherForecastFragment extends BasicWeatherDataFragment {
         }
     }
 
-    private Map<LocalDate, Integer> prepareForecastData(ForecastResponseDto data) {
+    private Map<LocalDate, ForecastElement> prepareForecastData(ForecastResponseDto data) {
         List<SingleTimestampDto> timestamps = data.getList();
         Map<LocalDate, List<SingleTimestampDto>> groupedByDate = timestamps.stream()
                 .collect(Collectors.groupingBy(dto -> LocalDateTime.parse(dto.getDt_txt(), dayTimeFormatter).toLocalDate(),
                         LinkedHashMap::new, Collectors.toList()));
 
-        Map<LocalDate, Integer> averageTemperatureByDate = new LinkedHashMap<>();
+        Map<LocalDate, ForecastElement> dailyForecast = new LinkedHashMap<>();
+        Map<String, Integer> weatherIconHistogram = new LinkedHashMap<>();
+
         LocalDate today = LocalDate.now();
         for (Map.Entry<LocalDate, List<SingleTimestampDto>> entry : groupedByDate.entrySet()) {
             LocalDate date = entry.getKey();
@@ -101,10 +105,22 @@ public class WeatherForecastFragment extends BasicWeatherDataFragment {
                 sumTemperature += forecast.getMain().getTemp();
             }
 
+            for (SingleTimestampDto forecast : forecasts) {
+                WeatherDescriptionDto weather = forecast.getWeather();
+                String icon = weather.getIcon();
+                weatherIconHistogram.put(icon, weatherIconHistogram.getOrDefault(icon, 0) + 1);
+            }
+
+            String mostCommonIcon = weatherIconHistogram.entrySet().stream()
+                    .max(Map.Entry.comparingByValue())
+                    .map(Map.Entry::getKey)
+                    .orElse(null);
+
             int averageTemperature = (int) (sumTemperature / forecasts.size());
-            averageTemperatureByDate.put(date, prepareTemperature(averageTemperature));
+            averageTemperature = prepareTemperature(averageTemperature);
+            dailyForecast.put(date, new ForecastElement(averageTemperature, mostCommonIcon));
         }
 
-        return averageTemperatureByDate;
+        return dailyForecast;
     }
 }
