@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private final OkHttpClient httpClient = new OkHttpClient();
     private final FragmentManager fragmentManager = getSupportFragmentManager();
     private String cityName;
-    private Unit units = Unit.METRIC;
+    private Unit units;
     private Timer timer;
     private LocalDateTime minimizationTimestamp;
 
