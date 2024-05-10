@@ -238,9 +238,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void fetchWeatherData() {
         String cityName = getCityNameInputValue();
-        String url = "http://api.openweathermap.org/data/2.5/weather?q=" + cityName
-                + "&appid=" + Constants.API_KEY
-                + "&units=" + units;
+        String url = Constants.API_URL + "weather?q=" + cityName + "&appid=" + Constants.API_KEY
+                + "&units=" + Constants.UNITS;
         CompletableFuture<WeatherResponseDto> weatherResponseDto = getRequest(this, httpClient, url, WeatherResponseDto.class);
         weatherResponseDto.handle((response, ex) -> {
             if (ex != null) {
@@ -259,9 +258,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void fetchForecastData() {
         String cityName = getCityNameInputValue();
-        String url = "http://api.openweathermap.org/data/2.5/forecast?q=" + cityName
-                + "&appid=" + Constants.API_KEY
-                + "&units=" + units;
+        String url = Constants.API_URL + "forecast?q=" + cityName + "&appid=" + Constants.API_KEY
+                + "&units=" + Constants.UNITS;
         CompletableFuture<ForecastResponseDto> forecastResponseDto = getRequest(this, httpClient, url, ForecastResponseDto.class);
         forecastResponseDto.handle((response, ex) -> {
             if (ex == null) {
