@@ -18,8 +18,8 @@ public class SingleTimestampDto {
         return main;
     }
 
-    public List<WeatherDescriptionDto> getWeather() {
-        return weather;
+    public WeatherDescriptionDto getWeather() {
+        return weather.get(0);
     }
 
     public String getDt_txt() {
