@@ -7,6 +7,7 @@
     <!-- Icons !-->
     <string name="refresh_icon">\u27F3</string>
     <string name="star_icon">\u2B50</string>
+    <string name="bin_icon">\uD83D\uDDD1</string>
 
     <!-- Basic weather mockup data !-->
     <string name="city_name">Warsaw</string>
