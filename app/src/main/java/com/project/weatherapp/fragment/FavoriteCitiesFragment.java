@@ -18,6 +18,8 @@ import com.project.weatherapp.R;
 import java.util.List;
 
 public class FavoriteCitiesFragment extends BasicWeatherDataFragment {
+    private boolean isSpinnerInitial = true;
+
     public FavoriteCitiesFragment() {
     }
 
@@ -51,7 +53,12 @@ public class FavoriteCitiesFragment extends BasicWeatherDataFragment {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                appState.setCurrentCity(spinner.getSelectedItem().toString());
+                if (isSpinnerInitial) {
+                    isSpinnerInitial = false;
+                } else {
+                    String selectedCity = spinner.getSelectedItem().toString();
+                    appState.setCurrentCity(selectedCity);
+                }
             }
 
             @Override
