@@ -11,7 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.project.weatherapp.AppContext;
+import com.project.weatherapp.AppState;
 import com.project.weatherapp.R;
 import com.project.weatherapp.dto.forecast.ForecastResponseDto;
 import com.project.weatherapp.dto.forecast.SingleTimestampDto;
@@ -40,9 +40,9 @@ public class WeatherForecastFragment extends BasicWeatherDataFragment {
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        appContext = new ViewModelProvider(requireActivity()).get(AppContext.class);
-        appContext.getUnit().observe(getViewLifecycleOwner(), value -> unit = value);
-        appContext.getForecastData().observe(getViewLifecycleOwner(), this::updateUI);
+        appState = new ViewModelProvider(requireActivity()).get(AppState.class);
+        appState.getUnit().observe(getViewLifecycleOwner(), value -> unit = value);
+        appState.getForecastData().observe(getViewLifecycleOwner(), this::updateUI);
     }
 
     private void updateUI(ForecastResponseDto response) {

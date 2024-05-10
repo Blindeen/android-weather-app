@@ -39,7 +39,7 @@ import okhttp3.OkHttpClient;
 import static com.project.weatherapp.Utils.*;
 
 public class MainActivity extends AppCompatActivity {
-    private AppContext appContext;
+    private AppState appState;
     private SharedPreferences sharedPreferences;
     private final OkHttpClient httpClient = new OkHttpClient();
     private final FragmentManager fragmentManager = getSupportFragmentManager();
@@ -124,15 +124,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putStringSet(Constants.FAV_CITIES_KEY, new LinkedHashSet<>(appContext.getFavoriteCities().getValue()));
+        editor.putStringSet(Constants.FAV_CITIES_KEY, new LinkedHashSet<>(appState.getFavoriteCities().getValue()));
         editor.putString(Constants.SAVED_CITY_KEY, cityName);
         editor.putInt(Constants.SAVED_UNIT_KEY, units.ordinal());
         editor.apply();
     }
 
     private void initializeContext() {
-        appContext = new ViewModelProvider(this).get(AppContext.class);
-        appContext.getCurrentCity().observe(this, city -> cityName = city);
+        appState = new ViewModelProvider(this).get(AppState.class);
+        appState.getCurrentCity().observe(this, city -> cityName = city);
     }
 
     private void configRadioListener() {
@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
                 units = Unit.IMPERIAL;
             }
 
-            appContext.setUnit(units);
+            appState.setUnit(units);
         });
     }
 
@@ -189,8 +189,8 @@ public class MainActivity extends AppCompatActivity {
         if (!isNetworkAvailable(this)) {
             WeatherResponseDto weatherData = readWeatherDataJSON(this, WeatherResponseDto.class);
             ForecastResponseDto forecastData = readWeatherDataJSON(this, ForecastResponseDto.class);
-            appContext.setWeatherData(weatherData);
-            appContext.setForecastData(forecastData);
+            appState.setWeatherData(weatherData);
+            appState.setForecastData(forecastData);
             displayToast(this, "No internet connection, weather data is outdated.");
         }
     }
@@ -211,13 +211,13 @@ public class MainActivity extends AppCompatActivity {
     private void loadFavoriteCities() {
         LinkedHashSet<String> defaultValue = new LinkedHashSet<>();
         Set<String> favoriteCities = sharedPreferences.getStringSet(Constants.FAV_CITIES_KEY, defaultValue);
-        appContext.setFavoriteCities(new ArrayList<>(favoriteCities));
+        appState.setFavoriteCities(new ArrayList<>(favoriteCities));
     }
 
     private void loadUnit() {
         int currentUnitOrdinal = sharedPreferences.getInt(Constants.SAVED_UNIT_KEY, Unit.METRIC.ordinal());
         units = Unit.values()[currentUnitOrdinal];
-        appContext.setUnit(units);
+        appState.setUnit(units);
 
         RadioGroup radioGroup = findViewById(R.id.unitsRadioGroup);
         if (radioGroup != null) {
@@ -246,8 +246,8 @@ public class MainActivity extends AppCompatActivity {
             if (ex != null) {
                 runOnUiThread(() -> displayToast(this, capitalizeString(ex.getMessage())));
             } else {
-                appContext.setWeatherData(response);
-                appContext.setCurrentCity(cityName);
+                appState.setWeatherData(response);
+                appState.setCurrentCity(cityName);
                 runOnUiThread(() -> {
                     clearCityNameInput();
                     displayToast(getApplicationContext(), "Data has been fetched");
@@ -265,7 +265,7 @@ public class MainActivity extends AppCompatActivity {
         CompletableFuture<ForecastResponseDto> forecastResponseDto = getRequest(this, httpClient, url, ForecastResponseDto.class);
         forecastResponseDto.handle((response, ex) -> {
             if (ex == null) {
-                appContext.setForecastData(response);
+                appState.setForecastData(response);
             }
             return null;
         });

@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.project.weatherapp.AppContext;
+import com.project.weatherapp.AppState;
 import com.project.weatherapp.R;
 import com.project.weatherapp.dto.currentweather.WeatherResponseDto;
 import com.project.weatherapp.enums.Unit;
@@ -29,7 +29,7 @@ import java.util.TimeZone;
 public class BasicWeatherDataFragment extends Fragment {
     protected Unit unit = Unit.METRIC;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("E MMM dd");
-    protected AppContext appContext;
+    protected AppState appState;
 
     public BasicWeatherDataFragment() {
     }
@@ -44,9 +44,9 @@ public class BasicWeatherDataFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        appContext = new ViewModelProvider(requireActivity()).get(AppContext.class);
-        appContext.getUnit().observe(getViewLifecycleOwner(), value -> unit = value);
-        appContext.getWeatherData().observe(getViewLifecycleOwner(), this::updateUI);
+        appState = new ViewModelProvider(requireActivity()).get(AppState.class);
+        appState.getUnit().observe(getViewLifecycleOwner(), value -> unit = value);
+        appState.getWeatherData().observe(getViewLifecycleOwner(), this::updateUI);
 
         TextView addToFavorites = view.findViewById(R.id.addToFavorites);
         addToFavorites.setOnClickListener(this::addFavoriteCityOnClick);
@@ -160,7 +160,7 @@ public class BasicWeatherDataFragment extends Fragment {
         if (root != null) {
             TextView cityName = root.findViewById(R.id.cityName);
             if (cityName != null) {
-                boolean additionResult = appContext.addFavoriteCity(cityName.getText().toString());
+                boolean additionResult = appState.addFavoriteCity(cityName.getText().toString());
                 String message = additionResult ? "City added to favorites!" : "City is already in favorites!";
                 displayToast(getContext(), message);
             }

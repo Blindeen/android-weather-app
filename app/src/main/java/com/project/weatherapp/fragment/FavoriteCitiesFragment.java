@@ -12,7 +12,7 @@ import android.widget.Spinner;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.project.weatherapp.AppContext;
+import com.project.weatherapp.AppState;
 import com.project.weatherapp.R;
 
 import java.util.List;
@@ -29,8 +29,8 @@ public class FavoriteCitiesFragment extends BasicWeatherDataFragment {
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        appContext = new ViewModelProvider(requireActivity()).get(AppContext.class);
-        appContext.getFavoriteCities().observe(getViewLifecycleOwner(), this::updateUI);
+        appState = new ViewModelProvider(requireActivity()).get(AppState.class);
+        appState.getFavoriteCities().observe(getViewLifecycleOwner(), this::updateUI);
         setSpinnerListener();
     }
 
@@ -51,7 +51,7 @@ public class FavoriteCitiesFragment extends BasicWeatherDataFragment {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                appContext.setCurrentCity(spinner.getSelectedItem().toString());
+                appState.setCurrentCity(spinner.getSelectedItem().toString());
             }
 
             @Override

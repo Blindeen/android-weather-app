@@ -9,7 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.project.weatherapp.AppContext;
+import com.project.weatherapp.AppState;
 import com.project.weatherapp.R;
 import com.project.weatherapp.dto.currentweather.WeatherResponseDto;
 
@@ -30,9 +30,9 @@ public class AdditionalWeatherDataFragment extends BasicWeatherDataFragment {
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        appContext = new ViewModelProvider(requireActivity()).get(AppContext.class);
-        appContext.getUnit().observe(getViewLifecycleOwner(), value -> unit = value);
-        appContext.getWeatherData().observe(getViewLifecycleOwner(), this::updateUI);
+        appState = new ViewModelProvider(requireActivity()).get(AppState.class);
+        appState.getUnit().observe(getViewLifecycleOwner(), value -> unit = value);
+        appState.getWeatherData().observe(getViewLifecycleOwner(), this::updateUI);
     }
 
     private void updateUI(WeatherResponseDto response) {
