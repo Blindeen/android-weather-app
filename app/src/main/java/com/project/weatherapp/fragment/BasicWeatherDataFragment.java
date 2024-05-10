@@ -119,7 +119,7 @@ public class BasicWeatherDataFragment extends Fragment {
         textView.setText(value);
     }
 
-    private Drawable getWeatherIcon(String ID) {
+    protected Drawable getWeatherIcon(String ID) {
         int drawableID = 0;
         switch (ID) {
             case "01d":
