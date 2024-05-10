@@ -17,6 +17,7 @@ import com.project.weatherapp.dto.currentweather.WeatherResponseDto;
 public class AdditionalWeatherDataFragment extends BasicWeatherDataFragment {
     private static final double MS_TO_KMH_COEFF = 3.6;
     private static final int M_TO_KM_COEFF = 1000;
+    private static final double MS_TO_MPH_COEFF = 2.2369;
 
 
     public AdditionalWeatherDataFragment() {
@@ -31,7 +32,13 @@ public class AdditionalWeatherDataFragment extends BasicWeatherDataFragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         appState = new ViewModelProvider(requireActivity()).get(AppState.class);
-        appState.getUnit().observe(getViewLifecycleOwner(), value -> unit = value);
+        appState.getUnit().observe(getViewLifecycleOwner(), value -> {
+            unit = value;
+            WeatherResponseDto weatherResponseDto = appState.getWeatherData().getValue();
+            if (weatherResponseDto != null) {
+                setTextViewValue(view, R.id.windSpeed, prepareWindSpeed(weatherResponseDto.getWind().getSpeed()));
+            }
+        });
         appState.getWeatherData().observe(getViewLifecycleOwner(), this::updateUI);
     }
 
@@ -60,6 +67,7 @@ public class AdditionalWeatherDataFragment extends BasicWeatherDataFragment {
             break;
             case IMPERIAL: {
                 windSpeedUnitString = " mph";
+                windSpeedValue = (int) (windSpeed * MS_TO_MPH_COEFF);
             }
         }
 

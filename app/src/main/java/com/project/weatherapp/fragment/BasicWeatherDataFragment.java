@@ -45,7 +45,13 @@ public class BasicWeatherDataFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         appState = new ViewModelProvider(requireActivity()).get(AppState.class);
-        appState.getUnit().observe(getViewLifecycleOwner(), value -> unit = value);
+        appState.getUnit().observe(getViewLifecycleOwner(), value -> {
+            unit = value;
+            WeatherResponseDto weatherResponseDto = appState.getWeatherData().getValue();
+            if (weatherResponseDto != null) {
+                setTemperature(view, weatherResponseDto);
+            }
+        });
         appState.getWeatherData().observe(getViewLifecycleOwner(), this::updateUI);
 
         TextView addToFavorites = view.findViewById(R.id.addToFavorites);
@@ -73,6 +79,7 @@ public class BasicWeatherDataFragment extends Fragment {
     }
 
     private void setTemperature(View view, WeatherResponseDto response) {
+        int temperature = prepareTemperature(response.getMain().getTemp());
         String temperatureUnitString;
         if (unit == Unit.METRIC) {
             temperatureUnitString = getString(R.string.celsius);
@@ -82,8 +89,15 @@ public class BasicWeatherDataFragment extends Fragment {
         setTextViewValue(
                 view,
                 R.id.temperature,
-                response.getMain().getTemp() + " " + temperatureUnitString
+                temperature + " " + temperatureUnitString
         );
+    }
+
+    protected int prepareTemperature(int celsiusTemperature) {
+        if (unit == Unit.IMPERIAL) {
+            return (int) (celsiusTemperature * 1.8) + 32;
+        }
+        return celsiusTemperature;
     }
 
     private void setDate(View view, WeatherResponseDto response) {

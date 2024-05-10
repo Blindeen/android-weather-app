@@ -41,7 +41,13 @@ public class WeatherForecastFragment extends BasicWeatherDataFragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         appState = new ViewModelProvider(requireActivity()).get(AppState.class);
-        appState.getUnit().observe(getViewLifecycleOwner(), value -> unit = value);
+        appState.getUnit().observe(getViewLifecycleOwner(), value -> {
+            unit = value;
+            ForecastResponseDto forecastResponseDto = appState.getForecastData().getValue();
+            if (forecastResponseDto != null) {
+                setForecastData(view, forecastResponseDto);
+            }
+        });
         appState.getForecastData().observe(getViewLifecycleOwner(), this::updateUI);
     }
 
@@ -96,7 +102,7 @@ public class WeatherForecastFragment extends BasicWeatherDataFragment {
             }
 
             int averageTemperature = (int) (sumTemperature / forecasts.size());
-            averageTemperatureByDate.put(date, averageTemperature);
+            averageTemperatureByDate.put(date, prepareTemperature(averageTemperature));
         }
 
         return averageTemperatureByDate;
