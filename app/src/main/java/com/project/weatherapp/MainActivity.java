@@ -41,6 +41,7 @@ import static com.project.weatherapp.Utils.*;
 public class MainActivity extends AppCompatActivity {
     private AppContext appContext;
     private SharedPreferences sharedPreferences;
+    private final OkHttpClient httpClient = new OkHttpClient();
     private final FragmentManager fragmentManager = getSupportFragmentManager();
     private String cityName;
     private Unit units = Unit.METRIC;
@@ -230,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                fetchData(null);
+                fetchData();
             }
         }, firstFetchDelay, Constants.FETCH_INTERVAL_MILLIS);
     }
@@ -240,7 +241,7 @@ public class MainActivity extends AppCompatActivity {
         String url = "http://api.openweathermap.org/data/2.5/weather?q=" + cityName
                 + "&appid=" + Constants.API_KEY
                 + "&units=" + units;
-        CompletableFuture<WeatherResponseDto> weatherResponseDto = getRequest(this, new OkHttpClient(), url, WeatherResponseDto.class);
+        CompletableFuture<WeatherResponseDto> weatherResponseDto = getRequest(this, httpClient, url, WeatherResponseDto.class);
         weatherResponseDto.handle((response, ex) -> {
             if (ex != null) {
                 runOnUiThread(() -> displayToast(this, capitalizeString(ex.getMessage())));
@@ -261,7 +262,7 @@ public class MainActivity extends AppCompatActivity {
         String url = "http://api.openweathermap.org/data/2.5/forecast?q=" + cityName
                 + "&appid=" + Constants.API_KEY
                 + "&units=" + units;
-        CompletableFuture<ForecastResponseDto> forecastResponseDto = getRequest(this, new OkHttpClient(), url, ForecastResponseDto.class);
+        CompletableFuture<ForecastResponseDto> forecastResponseDto = getRequest(this, httpClient, url, ForecastResponseDto.class);
         forecastResponseDto.handle((response, ex) -> {
             if (ex == null) {
                 appContext.setForecastData(response);
@@ -270,16 +271,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void fetchData(View view) {
+    private void fetchData() {
         fetchWeatherData();
         fetchForecastData();
-
-        if (view != null) {
-            if (timer != null) {
-                timer.cancel();
-            }
-            scheduleWeatherDataFetching(Constants.FETCH_INTERVAL_MILLIS);
-        }
     }
 
     private String getCityNameInputValue() {
@@ -296,5 +290,13 @@ public class MainActivity extends AppCompatActivity {
         if (cityNameInput != null) {
             cityNameInput.setText("");
         }
+    }
+
+    public void onRefreshDataButtonClick(View view) {
+        fetchData();
+        if (timer != null) {
+            timer.cancel();
+        }
+        scheduleWeatherDataFetching(Constants.FETCH_INTERVAL_MILLIS);
     }
 }
