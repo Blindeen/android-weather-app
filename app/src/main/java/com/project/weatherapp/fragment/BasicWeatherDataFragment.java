@@ -27,7 +27,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.TimeZone;
 
 public class BasicWeatherDataFragment extends Fragment {
-    protected Unit unit = Unit.METRIC;
+    protected Unit unit;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("E MMM dd");
     protected AppState appState;
 
