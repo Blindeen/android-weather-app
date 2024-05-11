@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.project.weatherapp.AppState;
 import com.project.weatherapp.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FavoriteCitiesFragment extends BasicWeatherDataFragment {
@@ -40,9 +41,11 @@ public class FavoriteCitiesFragment extends BasicWeatherDataFragment {
         View view = getView();
         if (view != null) {
             Spinner spinner = view.findViewById(R.id.favoriteCitiesSpinner);
+            List<String> favoriteCitiesCopy = new ArrayList<>(favoriteCities);
+            favoriteCitiesCopy.add(0, "");
             ArrayAdapter<String> adapter = new ArrayAdapter<>(
                     requireContext(),
-                    android.R.layout.simple_spinner_item, favoriteCities);
+                    android.R.layout.simple_spinner_item, favoriteCitiesCopy);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinner.setAdapter(adapter);
         }
@@ -57,7 +60,9 @@ public class FavoriteCitiesFragment extends BasicWeatherDataFragment {
                     isSpinnerInitial = false;
                 } else {
                     String selectedCity = spinner.getSelectedItem().toString();
-                    appState.setCurrentCity(selectedCity);
+                    if (!selectedCity.isEmpty()) {
+                        appState.setCurrentCity(selectedCity);
+                    }
                 }
             }
 
