@@ -122,7 +122,7 @@ public class WeatherForecastFragment extends BasicWeatherDataFragment {
 
     private String findMostCommonIcon(List<SingleTimestampDto> forecastTimestamps, Map<String, Integer> weatherIconHistogram) {
         for (SingleTimestampDto forecast : forecastTimestamps) {
-            WeatherDescriptionDto weather = forecast.getWeather();
+            WeatherDescriptionDto weather = forecast.getWeather().get(0);
             String icon = weather.getIcon();
             weatherIconHistogram.put(icon, weatherIconHistogram.getOrDefault(icon, 0) + 1);
         }
