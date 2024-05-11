@@ -133,7 +133,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void initializeContext() {
         appState = new ViewModelProvider(this).get(AppState.class);
-        appState.getCurrentCity().observe(this, city -> cityName = city);
+        appState.getCurrentCity().observe(this, city -> {
+            cityName = city;
+            userActionDataRefresh();
+        });
     }
 
     private void configRadioListener() {
@@ -247,7 +250,7 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 String responseCityName = response.getName();
                 appState.setWeatherData(response);
-                appState.setCurrentCity(responseCityName);
+                this.cityName = responseCityName;
                 runOnUiThread(() -> {
                     clearCityNameInput();
                     displayToast(getApplicationContext(), "Data has been fetched");
@@ -302,11 +305,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void onRefreshDataButtonClick(View view) {
+    private void userActionDataRefresh() {
         fetchData();
         if (timer != null) {
             timer.cancel();
         }
         scheduleWeatherDataFetching(Constants.FETCH_INTERVAL_MILLIS);
+    }
+
+    public void onRefreshDataButtonClick(View view) {
+        userActionDataRefresh();
     }
 }
