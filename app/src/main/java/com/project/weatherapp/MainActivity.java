@@ -1,11 +1,13 @@
 package com.project.weatherapp;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -17,11 +19,13 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.tabs.TabLayout;
 import com.project.weatherapp.dto.currentweather.WeatherResponseDto;
 import com.project.weatherapp.dto.forecast.ForecastResponseDto;
+import com.project.weatherapp.dto.geocode.GeocodeResponseDto;
 import com.project.weatherapp.enums.Unit;
 import com.project.weatherapp.fragment.AdditionalWeatherDataFragment;
 import com.project.weatherapp.fragment.BasicWeatherDataFragment;
 import com.project.weatherapp.fragment.FavoriteCitiesFragment;
 import com.project.weatherapp.fragment.WeatherForecastFragment;
+import com.project.weatherapp.listener.CityNameInputListener;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -58,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
         initializeContext();
         configRadioListener();
         configTabLayoutListener();
+        configTextInputListener();
 
         if (savedInstanceState == null) {
             try {
@@ -189,6 +194,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void configTextInputListener() {
+        EditText cityNameInput = findViewById(R.id.cityNameInput);
+        TextView actionButton = findViewById(R.id.actionButton);
+        if (cityNameInput != null && actionButton != null) {
+            cityNameInput.addTextChangedListener(new CityNameInputListener(this));
+        }
+    }
+
     private void handleInternetConnection() throws IOException {
         if (!isNetworkAvailable(this)) {
             WeatherResponseDto weatherData = readWeatherDataJSON(this, WeatherResponseDto.class.getSimpleName(), WeatherResponseDto.class);
@@ -235,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                fetchData();
+                fetchAllWeatherData();
             }
         }, firstFetchDelay, Constants.FETCH_INTERVAL_MILLIS);
     }
@@ -284,9 +297,23 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void fetchData() {
+    private void fetchAllWeatherData() {
         fetchWeatherData();
         fetchForecastData();
+    }
+
+    private void fetchGeocodingData() {
+        String cityName = getCityNameInputValue();
+        String url = String.format("%s/geo/1.0/direct?q=%s&appid=%s&limit=5", Constants.API_URL, cityName, Constants.API_KEY);
+        CompletableFuture<GeocodeResponseDto> geocodeResponseDto = getRequest(httpClient, url, GeocodeResponseDto.class);
+        geocodeResponseDto.handle((response, ex) -> {
+            if (ex != null) {
+                runOnUiThread(() -> displayToast(this, capitalizeString(ex.getMessage())));
+            } else {
+                //TODO: Fill in
+            }
+            return null;
+        });
     }
 
     private String getCityNameInputValue() {
@@ -306,7 +333,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void userActionDataRefresh() {
-        fetchData();
+        fetchAllWeatherData();
         if (timer != null) {
             timer.cancel();
         }
@@ -314,6 +341,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onRefreshDataButtonClick(View view) {
-        userActionDataRefresh();
+        EditText cityNameInput = findViewById(R.id.cityNameInput);
+        if (cityNameInput != null && cityNameInput.getText().toString().isEmpty()) {
+            userActionDataRefresh();
+        } else {
+            showDialog();
+        }
+    }
+
+    private void showDialog() {
+        String[] choices = {"Item One", "Item Two", "Item Three"};
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder
+                .setTitle(R.string.dialog_title)
+                .setNegativeButton("Cancel", (dialog, which) -> {
+
+                })
+                .setPositiveButton("Choose", (dialog, which) -> {
+
+                })
+                .setSingleChoiceItems(choices, 0, (dialog, which) -> {
+
+                });
+
+        builder.create().show();
     }
 }

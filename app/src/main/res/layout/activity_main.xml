@@ -116,7 +116,7 @@
                 android:textSize="@dimen/standard_font_size" />
 
             <TextView
-                android:id="@+id/refreshButton"
+                android:id="@+id/actionButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.4"
