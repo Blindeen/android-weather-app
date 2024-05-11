@@ -29,6 +29,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -245,12 +246,17 @@ public class MainActivity extends AppCompatActivity {
                 runOnUiThread(() -> displayToast(this, capitalizeString(ex.getMessage())));
             } else {
                 appState.setWeatherData(response);
-                appState.setCurrentCity(cityName);
+                appState.setCurrentCity(response.getName());
                 runOnUiThread(() -> {
                     clearCityNameInput();
                     displayToast(getApplicationContext(), "Data has been fetched");
                 });
                 saveWeatherDataJSON(this, response, WeatherResponseDto.class.getSimpleName() + ".json");
+
+                List<String> favoriteCities = appState.getFavoriteCities().getValue();
+                if (favoriteCities.contains(cityName)) {
+                    saveWeatherDataJSON(this, response, cityName + "_weather.json");
+                }
             }
             return null;
         });
@@ -264,6 +270,11 @@ public class MainActivity extends AppCompatActivity {
             if (ex == null) {
                 appState.setForecastData(response);
                 saveWeatherDataJSON(this, response, ForecastResponseDto.class.getSimpleName() + ".json");
+
+                List<String> favoriteCities = appState.getFavoriteCities().getValue();
+                if (favoriteCities.contains(cityName)) {
+                    saveWeatherDataJSON(this, response, cityName + "_forecast.json");
+                }
             }
             return null;
         });
