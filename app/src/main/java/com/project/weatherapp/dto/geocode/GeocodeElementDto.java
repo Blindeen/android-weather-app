@@ -26,4 +26,8 @@ public class GeocodeElementDto {
     public String getState() {
         return state;
     }
+
+    public String getDisplayName() {
+        return name + ", " + (state != null ? (state + ", ") : "") + country;
+    }
 }

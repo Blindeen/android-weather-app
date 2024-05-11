@@ -19,7 +19,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.tabs.TabLayout;
 import com.project.weatherapp.dto.currentweather.WeatherResponseDto;
 import com.project.weatherapp.dto.forecast.ForecastResponseDto;
-import com.project.weatherapp.dto.geocode.GeocodeResponseDto;
+import com.project.weatherapp.dto.geocode.GeocodeElementDto;
 import com.project.weatherapp.enums.Unit;
 import com.project.weatherapp.fragment.AdditionalWeatherDataFragment;
 import com.project.weatherapp.fragment.BasicWeatherDataFragment;
@@ -32,6 +32,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -305,12 +306,18 @@ public class MainActivity extends AppCompatActivity {
     private void fetchGeocodingData() {
         String cityName = getCityNameInputValue();
         String url = String.format("%s/geo/1.0/direct?q=%s&appid=%s&limit=5", Constants.API_URL, cityName, Constants.API_KEY);
-        CompletableFuture<GeocodeResponseDto> geocodeResponseDto = getRequest(httpClient, url, GeocodeResponseDto.class);
+        CompletableFuture<GeocodeElementDto[]> geocodeResponseDto = getRequest(httpClient, url, GeocodeElementDto[].class);
         geocodeResponseDto.handle((response, ex) -> {
             if (ex != null) {
                 runOnUiThread(() -> displayToast(this, capitalizeString(ex.getMessage())));
             } else {
-                //TODO: Fill in
+                runOnUiThread(() -> {
+                    if (response.length == 0) {
+                        displayToast(this, "No results found");
+                        return;
+                    }
+                    showDialog(new ArrayList<>(Arrays.asList(response)));
+                });
             }
             return null;
         });
@@ -345,12 +352,12 @@ public class MainActivity extends AppCompatActivity {
         if (cityNameInput != null && cityNameInput.getText().toString().isEmpty()) {
             userActionDataRefresh();
         } else {
-            showDialog();
+            fetchGeocodingData();
         }
     }
 
-    private void showDialog() {
-        String[] choices = {"Item One", "Item Two", "Item Three"};
+    private void showDialog(List<GeocodeElementDto> geocodeElementDto) {
+        String[] geocodeElementDtos = geocodeElementDto.stream().map(GeocodeElementDto::getDisplayName).toArray(String[]::new);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder
@@ -361,7 +368,7 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton("Choose", (dialog, which) -> {
 
                 })
-                .setSingleChoiceItems(choices, 0, (dialog, which) -> {
+                .setSingleChoiceItems(geocodeElementDtos, 0, (dialog, which) -> {
 
                 });
 
