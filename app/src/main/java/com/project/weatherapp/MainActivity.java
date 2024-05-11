@@ -187,8 +187,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void handleInternetConnection() throws IOException {
         if (!isNetworkAvailable(this)) {
-            WeatherResponseDto weatherData = readWeatherDataJSON(this, WeatherResponseDto.class);
-            ForecastResponseDto forecastData = readWeatherDataJSON(this, ForecastResponseDto.class);
+            WeatherResponseDto weatherData = readWeatherDataJSON(this, WeatherResponseDto.class.getSimpleName(), WeatherResponseDto.class);
+            ForecastResponseDto forecastData = readWeatherDataJSON(this, ForecastResponseDto.class.getSimpleName(), ForecastResponseDto.class);
             appState.setWeatherData(weatherData);
             appState.setForecastData(forecastData);
             displayToast(this, "No internet connection, weather data is outdated.");

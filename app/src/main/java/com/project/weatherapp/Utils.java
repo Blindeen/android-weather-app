@@ -88,11 +88,11 @@ public class Utils {
         }
     }
 
-    public static <T> T readWeatherDataJSON(Context context, Class<T> classType) throws IOException {
+    public static <T> T readWeatherDataJSON(Context context, String filename, Class<T> classType) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        FileInputStream fileInputStream = context.openFileInput(classType.getSimpleName() + ".json");
+        FileInputStream fileInputStream = context.openFileInput(filename + ".json");
         InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         StringBuilder stringBuilder = new StringBuilder();
