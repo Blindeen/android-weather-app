@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.weatherapp.dto.currentweather.ErrorResponseDto;
@@ -27,7 +28,7 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class Utils {
-    public static <T> CompletableFuture<T> getRequest(Context context, OkHttpClient client, String url, Class<T> classType) {
+    public static <T> CompletableFuture<T> getRequest(OkHttpClient client, String url, Class<T> classType) {
         CompletableFuture<T> future = new CompletableFuture<>();
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -46,7 +47,6 @@ public class Utils {
                 String responseBodyString = responseBody != null ? responseBody.string() : "";
 
                 if (response.isSuccessful()) {
-                    saveWeatherDataJSON(context, responseBodyString, classType.getSimpleName() + ".json");
                     T responseDto = objectMapper.readValue(responseBodyString, classType);
                     future.complete(responseDto);
                 } else {
@@ -78,10 +78,20 @@ public class Utils {
         return false;
     }
 
-    private static void saveWeatherDataJSON(Context context, String fileContent, String filename) {
+    public static void saveWeatherDataJSON(Context context, Object obj, String filename) {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        String jsonString;
+        try {
+            jsonString = objectMapper.writeValueAsString(obj);
+        } catch (JsonProcessingException e) {
+            displayToast(context, "Error occurred while converting object to JSON");
+            return;
+        }
+
         try {
             FileOutputStream fos = context.openFileOutput(filename, Context.MODE_PRIVATE);
-            fos.write(fileContent.getBytes());
+            fos.write(jsonString.getBytes());
             fos.close();
         } catch (IOException e) {
             displayToast(context, "Error occurred while saving weather data");

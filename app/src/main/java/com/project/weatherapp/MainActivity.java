@@ -239,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
     public void fetchWeatherData() {
         String cityName = getCityNameInputValue();
         String url = String.format("%s/data/2.5/weather?q=%s&appid=%s&units=%s", Constants.API_URL, cityName, Constants.API_KEY, Constants.UNITS);
-        CompletableFuture<WeatherResponseDto> weatherResponseDto = getRequest(this, httpClient, url, WeatherResponseDto.class);
+        CompletableFuture<WeatherResponseDto> weatherResponseDto = getRequest(httpClient, url, WeatherResponseDto.class);
         weatherResponseDto.handle((response, ex) -> {
             if (ex != null) {
                 runOnUiThread(() -> displayToast(this, capitalizeString(ex.getMessage())));
@@ -250,6 +250,7 @@ public class MainActivity extends AppCompatActivity {
                     clearCityNameInput();
                     displayToast(getApplicationContext(), "Data has been fetched");
                 });
+                saveWeatherDataJSON(this, response, WeatherResponseDto.class.getSimpleName() + ".json");
             }
             return null;
         });
@@ -258,10 +259,11 @@ public class MainActivity extends AppCompatActivity {
     private void fetchForecastData() {
         String cityName = getCityNameInputValue();
         String url = String.format("%s/data/2.5/forecast?q=%s&appid=%s&units=%s", Constants.API_URL, cityName, Constants.API_KEY, Constants.UNITS);
-        CompletableFuture<ForecastResponseDto> forecastResponseDto = getRequest(this, httpClient, url, ForecastResponseDto.class);
+        CompletableFuture<ForecastResponseDto> forecastResponseDto = getRequest(httpClient, url, ForecastResponseDto.class);
         forecastResponseDto.handle((response, ex) -> {
             if (ex == null) {
                 appState.setForecastData(response);
+                saveWeatherDataJSON(this, response, ForecastResponseDto.class.getSimpleName() + ".json");
             }
             return null;
         });
