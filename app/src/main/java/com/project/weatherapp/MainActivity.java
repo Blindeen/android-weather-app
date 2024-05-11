@@ -245,8 +245,9 @@ public class MainActivity extends AppCompatActivity {
             if (ex != null) {
                 runOnUiThread(() -> displayToast(this, capitalizeString(ex.getMessage())));
             } else {
+                String responseCityName = response.getName();
                 appState.setWeatherData(response);
-                appState.setCurrentCity(response.getName());
+                appState.setCurrentCity(responseCityName);
                 runOnUiThread(() -> {
                     clearCityNameInput();
                     displayToast(getApplicationContext(), "Data has been fetched");
@@ -254,8 +255,8 @@ public class MainActivity extends AppCompatActivity {
                 saveWeatherDataJSON(this, response, WeatherResponseDto.class.getSimpleName() + ".json");
 
                 List<String> favoriteCities = appState.getFavoriteCities().getValue();
-                if (favoriteCities.contains(cityName)) {
-                    saveWeatherDataJSON(this, response, cityName + "_weather.json");
+                if (favoriteCities.contains(responseCityName)) {
+                    saveWeatherDataJSON(this, response, responseCityName + "_weather.json");
                 }
             }
             return null;
