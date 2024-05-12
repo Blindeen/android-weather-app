@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private final OkHttpClient httpClient = new OkHttpClient();
     private final FragmentManager fragmentManager = getSupportFragmentManager();
+    private GeocodeElementDto currentCity;
     private String cityName;
     private Unit units;
     private Timer timer;
@@ -85,7 +86,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         loadFavoriteCities();
-        cityName = sharedPreferences.getString(Constants.SAVED_CITY_KEY, Constants.DEFAULT_CITY);
+        String lat = sharedPreferences.getString(Constants.SAVED_LAT_KEY, "52.2319581");
+        String lon = sharedPreferences.getString(Constants.SAVED_LON_KEY, "21.0067249");
+        currentCity = new GeocodeElementDto(lat, lon);
         loadUnit();
     }
 
@@ -132,7 +135,9 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putStringSet(Constants.FAV_CITIES_KEY, new LinkedHashSet<>(appState.getFavoriteCities().getValue()));
-        editor.putString(Constants.SAVED_CITY_KEY, cityName);
+        editor.putString(Constants.SAVED_CITY_KEY, currentCity.getName());
+        editor.putString(Constants.SAVED_LAT_KEY, currentCity.getLat());
+        editor.putString(Constants.SAVED_LON_KEY, currentCity.getLon());
         editor.putInt(Constants.SAVED_UNIT_KEY, units.ordinal());
         editor.apply();
     }
@@ -255,8 +260,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void fetchWeatherData() {
-        String cityName = getCityNameInputValue();
-        String url = String.format("%s/data/2.5/weather?q=%s&appid=%s&units=%s", Constants.API_URL, cityName, Constants.API_KEY, Constants.UNITS);
+        String url = String.format("%s/data/2.5/weather?lat=%s&lon=%s&appid=%s&units=%s",
+                Constants.API_URL, currentCity.getLat(), currentCity.getLon(), Constants.API_KEY, Constants.UNITS);
         CompletableFuture<WeatherResponseDto> weatherResponseDto = getRequest(httpClient, url, WeatherResponseDto.class);
         weatherResponseDto.handle((response, ex) -> {
             if (ex != null) {
@@ -264,7 +269,6 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 String responseCityName = response.getName();
                 appState.setWeatherData(response);
-                this.cityName = responseCityName;
                 runOnUiThread(() -> {
                     clearCityNameInput();
                     displayToast(getApplicationContext(), "Data has been fetched");
@@ -281,8 +285,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void fetchForecastData() {
-        String cityName = getCityNameInputValue();
-        String url = String.format("%s/data/2.5/forecast?q=%s&appid=%s&units=%s", Constants.API_URL, cityName, Constants.API_KEY, Constants.UNITS);
+        String url = String.format("%s/data/2.5/forecast?lat=%s&lon=%s&appid=%s&units=%s",
+                Constants.API_URL, currentCity.getLat(), currentCity.getLon(), Constants.API_KEY, Constants.UNITS);
         CompletableFuture<ForecastResponseDto> forecastResponseDto = getRequest(httpClient, url, ForecastResponseDto.class);
         forecastResponseDto.handle((response, ex) -> {
             if (ex == null) {
@@ -290,7 +294,7 @@ public class MainActivity extends AppCompatActivity {
                 saveWeatherDataJSON(this, response, ForecastResponseDto.class.getSimpleName() + ".json");
 
                 List<String> favoriteCities = appState.getFavoriteCities().getValue();
-                if (favoriteCities.contains(cityName)) {
+                if (favoriteCities.contains(currentCity.getName())) {
                     saveWeatherDataJSON(this, response, cityName + "_forecast.json");
                 }
             }
@@ -356,21 +360,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void showDialog(List<GeocodeElementDto> geocodeElementDto) {
-        String[] geocodeElementDtos = geocodeElementDto.stream().map(GeocodeElementDto::getDisplayName).toArray(String[]::new);
+    private void showDialog(List<GeocodeElementDto> availablePlaces) {
+        String[] availablePlaceStrings = availablePlaces.stream().map(GeocodeElementDto::getDisplayName).toArray(String[]::new);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder
                 .setTitle(R.string.dialog_title)
                 .setNegativeButton("Cancel", (dialog, which) -> {
-
                 })
-                .setPositiveButton("Choose", (dialog, which) -> {
-
-                })
-                .setSingleChoiceItems(geocodeElementDtos, 0, (dialog, which) -> {
-
-                });
+                .setPositiveButton("Choose", (dialog, which) -> fetchAllWeatherData())
+                .setSingleChoiceItems(availablePlaceStrings, 0, (dialog, which) -> currentCity = availablePlaces.get(which));
 
         builder.create().show();
     }
