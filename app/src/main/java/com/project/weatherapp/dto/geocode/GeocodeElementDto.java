@@ -2,20 +2,29 @@ package com.project.weatherapp.dto.geocode;
 
 public class GeocodeElementDto {
     private String name;
-    private Double lat;
-    private Double lon;
+    private String lat;
+    private String lon;
     private String country;
     private String state;
+
+    public GeocodeElementDto() {
+        super();
+    }
+
+    public GeocodeElementDto(String lat, String lon) {
+        this.lat = lat;
+        this.lon = lon;
+    }
 
     public String getName() {
         return name;
     }
 
-    public Double getLat() {
+    public String getLat() {
         return lat;
     }
 
-    public Double getLon() {
+    public String getLon() {
         return lon;
     }
 
