@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
@@ -15,13 +14,12 @@ import androidx.lifecycle.ViewModelProvider;
 import com.project.weatherapp.AppState;
 import com.project.weatherapp.R;
 import com.project.weatherapp.dto.geocode.GeocodeElementDto;
+import com.project.weatherapp.listener.SpinnerOnItemSelectListener;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class FavoriteCitiesFragment extends BasicWeatherDataFragment {
-    private boolean isSpinnerInitial = true;
-
     public FavoriteCitiesFragment() {
     }
 
@@ -54,27 +52,6 @@ public class FavoriteCitiesFragment extends BasicWeatherDataFragment {
 
     private void setSpinnerListener() {
         Spinner spinner = requireView().findViewById(R.id.favoriteCitiesSpinner);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (isSpinnerInitial) {
-                    isSpinnerInitial = false;
-                } else {
-                    String selectedCity = spinner.getSelectedItem().toString();
-                    if (!selectedCity.isEmpty()) {
-                        List<GeocodeElementDto> favoriteCities = appState.getFavoriteCities().getValue();
-                        if (favoriteCities != null) {
-                            favoriteCities.stream()
-                                    .filter(city -> city.getDisplayName().equals(selectedCity))
-                                    .findFirst().ifPresent(selectedGeocode -> appState.setCurrentCityGeocode(selectedGeocode));
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
+        spinner.setOnItemSelectedListener(new SpinnerOnItemSelectListener(spinner, appState));
     }
 }
