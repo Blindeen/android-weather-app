@@ -392,8 +392,16 @@ public class MainActivity extends AppCompatActivity {
                 .setTitle(R.string.dialog_title)
                 .setNegativeButton("Cancel", (dialog, which) -> {
                 })
-                .setPositiveButton("Choose", (dialog, which) -> fetchAllWeatherData())
-                .setSingleChoiceItems(availablePlaceStrings, 0, (dialog, which) -> currentCity = availablePlaces.get(which));
+                .setPositiveButton("Choose", (dialog, which) -> {
+                    AlertDialog alertDialog = (AlertDialog) dialog;
+                    int selectedPosition = alertDialog.getListView().getCheckedItemPosition();
+                    if (selectedPosition != -1) {
+                        fetchAllWeatherData();
+                    } else {
+                        displayToast(this, "No city selected");
+                    }
+                })
+                .setSingleChoiceItems(availablePlaceStrings, -1, (dialog, which) -> currentCity = availablePlaces.get(which));
 
         builder.create().show();
     }
