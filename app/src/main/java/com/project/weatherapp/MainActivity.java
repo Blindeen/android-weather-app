@@ -77,18 +77,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
         if (sharedPreferences == null) {
             sharedPreferences = getPreferences(Context.MODE_PRIVATE);
         }
-
         loadFavoriteCities();
-        String cityName = sharedPreferences.getString(Constants.SAVED_CITY_KEY, "Warsaw");
-        String lat = sharedPreferences.getString(Constants.SAVED_LAT_KEY, "52.2319581");
-        String lon = sharedPreferences.getString(Constants.SAVED_LON_KEY, "21.0067249");
-        String country = sharedPreferences.getString(Constants.SAVED_COUNTRY_KEY, "PL");
-        String state = sharedPreferences.getString(Constants.SAVED_STATE_KEY, "Masovian Voivodeship");
-        currentCity = new GeocodeElementDto(cityName, lat, lon, country, state);
+        String savedCity = sharedPreferences.getString(Constants.SAVED_CITY_KEY, "Warsaw 52.2319581 21.0067249 PL Masovian Voivodeship");
+        currentCity = GeocodeElementDto.fromString(savedCity);
         loadUnit();
     }
 
@@ -139,11 +133,7 @@ public class MainActivity extends AppCompatActivity {
         LinkedHashSet<String> favoriteCitiesStrings = favoriteCities.stream().map(GeocodeElementDto::toString).collect(LinkedHashSet::new, LinkedHashSet::add, LinkedHashSet::addAll);
         editor.putStringSet(Constants.FAV_CITIES_KEY, favoriteCitiesStrings);
 
-        editor.putString(Constants.SAVED_CITY_KEY, currentCity.getName());
-        editor.putString(Constants.SAVED_LAT_KEY, currentCity.getLat());
-        editor.putString(Constants.SAVED_LON_KEY, currentCity.getLon());
-        editor.putString(Constants.SAVED_COUNTRY_KEY, currentCity.getCountry());
-        editor.putString(Constants.SAVED_STATE_KEY, currentCity.getState());
+        editor.putString(Constants.SAVED_CITY_KEY, currentCity.toString());
         editor.putInt(Constants.SAVED_UNIT_KEY, units.ordinal());
         editor.apply();
     }
