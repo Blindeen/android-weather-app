@@ -13,7 +13,6 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.tabs.TabLayout;
@@ -21,11 +20,8 @@ import com.project.weatherapp.dto.currentweather.WeatherResponseDto;
 import com.project.weatherapp.dto.forecast.ForecastResponseDto;
 import com.project.weatherapp.dto.geocode.GeocodeElementDto;
 import com.project.weatherapp.enums.Unit;
-import com.project.weatherapp.fragment.AdditionalWeatherDataFragment;
-import com.project.weatherapp.fragment.BasicWeatherDataFragment;
-import com.project.weatherapp.fragment.FavoriteCitiesFragment;
-import com.project.weatherapp.fragment.WeatherForecastFragment;
 import com.project.weatherapp.listener.CityNameInputListener;
+import com.project.weatherapp.listener.TabLayoutOnSelectListener;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -178,37 +174,7 @@ public class MainActivity extends AppCompatActivity {
     private void configTabLayoutListener() {
         TabLayout tabLayout = findViewById(R.id.fragmentMenu);
         if (tabLayout != null) {
-            tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-                @Override
-                public void onTabSelected(TabLayout.Tab tab) {
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-                    int position = tab.getPosition();
-                    switch (position) {
-                        case 0:
-                            fragmentTransaction.replace(R.id.fragmentContainer, BasicWeatherDataFragment.class, null);
-                            break;
-                        case 1:
-                            fragmentTransaction.replace(R.id.fragmentContainer, AdditionalWeatherDataFragment.class, null);
-                            break;
-                        case 2:
-                            fragmentTransaction.replace(R.id.fragmentContainer, WeatherForecastFragment.class, null);
-                            break;
-                        case 3:
-                            fragmentTransaction.replace(R.id.fragmentContainer, FavoriteCitiesFragment.class, null);
-                    }
-
-                    fragmentTransaction.commit();
-                }
-
-                @Override
-                public void onTabUnselected(TabLayout.Tab tab) {
-                }
-
-                @Override
-                public void onTabReselected(TabLayout.Tab tab) {
-                }
-            });
+            tabLayout.addOnTabSelectedListener(new TabLayoutOnSelectListener(fragmentManager));
         }
     }
 
@@ -288,15 +254,7 @@ public class MainActivity extends AppCompatActivity {
                     displayToast(getApplicationContext(), "Data has been fetched");
                 });
                 saveWeatherDataJSON(this, response, WeatherResponseDto.class.getSimpleName() + ".json");
-
-                List<GeocodeElementDto> favoriteCities = appState.getFavoriteCities().getValue();
-                if (favoriteCities != null) {
-                    for (GeocodeElementDto favoriteCity : favoriteCities) {
-                        if (Objects.equals(favoriteCity.getLat(), currentCity.getLat()) && Objects.equals(favoriteCity.getLon(), currentCity.getLon())) {
-                            saveWeatherDataJSON(this, response, favoriteCity.getLat() + favoriteCity.getLon() + "_weather.json");
-                        }
-                    }
-                }
+                saveDataForFavoriteCity(response, "_weather.json");
             }
             return null;
         });
@@ -310,18 +268,21 @@ public class MainActivity extends AppCompatActivity {
             if (ex == null) {
                 appState.setForecastData(response);
                 saveWeatherDataJSON(this, response, ForecastResponseDto.class.getSimpleName() + ".json");
-
-                List<GeocodeElementDto> favoriteCities = appState.getFavoriteCities().getValue();
-                if (favoriteCities != null) {
-                    for (GeocodeElementDto favoriteCity : favoriteCities) {
-                        if (Objects.equals(favoriteCity.getLat(), currentCity.getLat()) && Objects.equals(favoriteCity.getLon(), currentCity.getLon())) {
-                            saveWeatherDataJSON(this, response, favoriteCity.getLat() + favoriteCity.getLon() + "_forecast.json");
-                        }
-                    }
-                }
+                saveDataForFavoriteCity(response, "_forecast.json");
             }
             return null;
         });
+    }
+
+    private void saveDataForFavoriteCity(Object response, String filenameEnding) {
+        List<GeocodeElementDto> favoriteCities = appState.getFavoriteCities().getValue();
+        if (favoriteCities != null) {
+            for (GeocodeElementDto favoriteCity : favoriteCities) {
+                if (Objects.equals(favoriteCity.getLat(), currentCity.getLat()) && Objects.equals(favoriteCity.getLon(), currentCity.getLon())) {
+                    saveWeatherDataJSON(this, response, favoriteCity.getLat() + favoriteCity.getLon() + filenameEnding);
+                }
+            }
+        }
     }
 
     private void fetchAllWeatherData() {
