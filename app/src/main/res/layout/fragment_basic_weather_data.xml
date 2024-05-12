@@ -22,22 +22,25 @@
 
             <TextView
                 android:id="@+id/cityName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/city_name"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.4"
+                android:autoSizeMaxTextSize="@dimen/h1_font_size"
+                android:autoSizeMinTextSize="10sp"
+                android:autoSizeTextType="uniform"
+                android:gravity="center"
+                android:text="Warsaw, Mazovia Voivodeship, PL"
                 android:textColor="#FFFFFF"
                 android:textColorLink="#FFFFFF"
                 android:textSize="@dimen/h1_font_size" />
 
-            <Space
-                android:layout_width="10sp"
-                android:layout_height="wrap_content" />
-
             <TextView
                 android:id="@+id/addToFavorites"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.1"
                 android:clickable="true"
+                android:gravity="left|center_vertical"
                 android:text="@string/star_icon"
                 android:textColor="#FFFFFF"
                 android:textSize="@dimen/standard_font_size" />
