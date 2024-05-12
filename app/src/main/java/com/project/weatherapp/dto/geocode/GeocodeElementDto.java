@@ -48,18 +48,14 @@ public class GeocodeElementDto {
     @NonNull
     @Override
     public String toString() {
-        return String.format("GeocodeElementDto{name='%s', lat='%s', lon='%s', country='%s', state='%s'}", name, lat, lon, country, state);
+        return String.format("%s %s %s %s %s", name, lat, lon, country, state);
     }
 
 
     public static GeocodeElementDto fromString(String geocodeElementDtoString) {
-        String[] parts = geocodeElementDtoString.split(",");
-        GeocodeElementDto geocodeElementDto = new GeocodeElementDto();
-        geocodeElementDto.name = parts[0].split("=")[1];
-        geocodeElementDto.lat = parts[1].split("=")[1];
-        geocodeElementDto.lon = parts[2].split("=")[1];
-        geocodeElementDto.country = parts[3].split("=")[1];
-        geocodeElementDto.state = parts[4].split("=")[1];
-        return geocodeElementDto;
+        String[] parts = geocodeElementDtoString.split(" ");
+        return new GeocodeElementDto(
+                parts[0], parts[1], parts[2], parts[3], parts[4]
+        );
     }
 }
