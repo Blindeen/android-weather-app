@@ -277,7 +277,7 @@ public class MainActivity extends AppCompatActivity {
 
                 List<String> favoriteCities = appState.getFavoriteCities().getValue();
                 if (favoriteCities.contains(responseCityName)) {
-                    saveWeatherDataJSON(this, response, responseCityName + "_weather.json");
+                    saveWeatherDataJSON(this, response, currentCity.getLat() + currentCity.getLon() + "_weather.json");
                 }
             }
             return null;
@@ -295,7 +295,7 @@ public class MainActivity extends AppCompatActivity {
 
                 List<String> favoriteCities = appState.getFavoriteCities().getValue();
                 if (favoriteCities.contains(currentCity.getName())) {
-                    saveWeatherDataJSON(this, response, cityName + "_forecast.json");
+                    saveWeatherDataJSON(this, response, currentCity.getLat() + currentCity.getLon() + "_forecast.json");
                 }
             }
             return null;
