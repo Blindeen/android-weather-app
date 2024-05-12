@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
             sharedPreferences = getPreferences(Context.MODE_PRIVATE);
         }
         loadFavoriteCities();
-        String savedCity = sharedPreferences.getString(Constants.SAVED_CITY_KEY, "Warsaw 52.2319581 21.0067249 PL Masovian Voivodeship");
+        String savedCity = sharedPreferences.getString(Constants.SAVED_CITY_KEY, Constants.DEFAULT_CITY);
         currentCity = GeocodeElementDto.fromString(savedCity);
         loadUnit();
     }
