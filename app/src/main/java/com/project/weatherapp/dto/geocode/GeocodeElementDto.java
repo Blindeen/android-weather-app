@@ -51,6 +51,14 @@ public class GeocodeElementDto {
         return String.format("%s %s %s %s %s", name, lat, lon, country, state);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof GeocodeElementDto) {
+            GeocodeElementDto other = (GeocodeElementDto) obj;
+            return this.name.equals(other.name) && this.lat.equals(other.lat) && this.lon.equals(other.lon) && this.country.equals(other.country) && this.state.equals(other.state);
+        }
+        return false;
+    }
 
     public static GeocodeElementDto fromString(String geocodeElementDtoString) {
         String[] parts = geocodeElementDtoString.split(" ");

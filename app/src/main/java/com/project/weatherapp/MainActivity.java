@@ -155,8 +155,10 @@ public class MainActivity extends AppCompatActivity {
     private void initializeContext() {
         appState = new ViewModelProvider(this).get(AppState.class);
         appState.getCurrentCityGeocode().observe(this, city -> {
-            currentCity = city;
-            userActionDataRefresh();
+            if (!currentCity.equals(city)) {
+                currentCity = city;
+                userActionDataRefresh();
+            }
         });
     }
 
