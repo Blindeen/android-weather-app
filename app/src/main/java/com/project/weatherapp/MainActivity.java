@@ -35,10 +35,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import okhttp3.OkHttpClient;
 
@@ -50,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
     private final OkHttpClient httpClient = new OkHttpClient();
     private final FragmentManager fragmentManager = getSupportFragmentManager();
     private GeocodeElementDto currentCity;
-    private String cityName;
     private Unit units;
     private Timer timer;
     private LocalDateTime minimizationTimestamp;
@@ -86,9 +87,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         loadFavoriteCities();
+        String cityName = sharedPreferences.getString(Constants.SAVED_CITY_KEY, "Warsaw");
         String lat = sharedPreferences.getString(Constants.SAVED_LAT_KEY, "52.2319581");
         String lon = sharedPreferences.getString(Constants.SAVED_LON_KEY, "21.0067249");
-        currentCity = new GeocodeElementDto(lat, lon);
+        String country = sharedPreferences.getString(Constants.SAVED_COUNTRY_KEY, "PL");
+        String state = sharedPreferences.getString(Constants.SAVED_STATE_KEY, "Masovian Voivodeship");
+        currentCity = new GeocodeElementDto(cityName, lat, lon, country, state);
         loadUnit();
     }
 
@@ -134,18 +138,24 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putStringSet(Constants.FAV_CITIES_KEY, new LinkedHashSet<>(appState.getFavoriteCities().getValue()));
+
+        LinkedHashSet<GeocodeElementDto> favoriteCities = new LinkedHashSet<>(appState.getFavoriteCities().getValue());
+        LinkedHashSet<String> favoriteCitiesStrings = favoriteCities.stream().map(GeocodeElementDto::toString).collect(LinkedHashSet::new, LinkedHashSet::add, LinkedHashSet::addAll);
+        editor.putStringSet(Constants.FAV_CITIES_KEY, favoriteCitiesStrings);
+
         editor.putString(Constants.SAVED_CITY_KEY, currentCity.getName());
         editor.putString(Constants.SAVED_LAT_KEY, currentCity.getLat());
         editor.putString(Constants.SAVED_LON_KEY, currentCity.getLon());
+        editor.putString(Constants.SAVED_COUNTRY_KEY, currentCity.getCountry());
+        editor.putString(Constants.SAVED_STATE_KEY, currentCity.getState());
         editor.putInt(Constants.SAVED_UNIT_KEY, units.ordinal());
         editor.apply();
     }
 
     private void initializeContext() {
         appState = new ViewModelProvider(this).get(AppState.class);
-        appState.getCurrentCity().observe(this, city -> {
-            cityName = city;
+        appState.getCurrentCityGeocode().observe(this, city -> {
+            currentCity = city;
             userActionDataRefresh();
         });
     }
@@ -234,7 +244,9 @@ public class MainActivity extends AppCompatActivity {
     private void loadFavoriteCities() {
         LinkedHashSet<String> defaultValue = new LinkedHashSet<>();
         Set<String> favoriteCities = sharedPreferences.getStringSet(Constants.FAV_CITIES_KEY, defaultValue);
-        appState.setFavoriteCities(new ArrayList<>(favoriteCities));
+        List<GeocodeElementDto> favoriteCitiesGeocode = favoriteCities.stream().map(GeocodeElementDto::fromString).collect(Collectors.toList());
+
+        appState.setFavoriteCities(favoriteCitiesGeocode);
     }
 
     private void loadUnit() {
@@ -267,7 +279,7 @@ public class MainActivity extends AppCompatActivity {
             if (ex != null) {
                 runOnUiThread(() -> displayToast(this, capitalizeString(ex.getMessage())));
             } else {
-                String responseCityName = response.getName();
+                response.setGeocodeElementDto(currentCity);
                 appState.setWeatherData(response);
                 runOnUiThread(() -> {
                     clearCityNameInput();
@@ -275,9 +287,13 @@ public class MainActivity extends AppCompatActivity {
                 });
                 saveWeatherDataJSON(this, response, WeatherResponseDto.class.getSimpleName() + ".json");
 
-                List<String> favoriteCities = appState.getFavoriteCities().getValue();
-                if (favoriteCities.contains(responseCityName)) {
-                    saveWeatherDataJSON(this, response, currentCity.getLat() + currentCity.getLon() + "_weather.json");
+                List<GeocodeElementDto> favoriteCities = appState.getFavoriteCities().getValue();
+                if (favoriteCities != null) {
+                    for (GeocodeElementDto favoriteCity : favoriteCities) {
+                        if (Objects.equals(favoriteCity.getLat(), currentCity.getLat()) && Objects.equals(favoriteCity.getLon(), currentCity.getLon())) {
+                            saveWeatherDataJSON(this, response, favoriteCity.getLat() + favoriteCity.getLon() + "_weather.json");
+                        }
+                    }
                 }
             }
             return null;
@@ -293,9 +309,13 @@ public class MainActivity extends AppCompatActivity {
                 appState.setForecastData(response);
                 saveWeatherDataJSON(this, response, ForecastResponseDto.class.getSimpleName() + ".json");
 
-                List<String> favoriteCities = appState.getFavoriteCities().getValue();
-                if (favoriteCities.contains(currentCity.getName())) {
-                    saveWeatherDataJSON(this, response, currentCity.getLat() + currentCity.getLon() + "_forecast.json");
+                List<GeocodeElementDto> favoriteCities = appState.getFavoriteCities().getValue();
+                if (favoriteCities != null) {
+                    for (GeocodeElementDto favoriteCity : favoriteCities) {
+                        if (Objects.equals(favoriteCity.getLat(), currentCity.getLat()) && Objects.equals(favoriteCity.getLon(), currentCity.getLon())) {
+                            saveWeatherDataJSON(this, response, favoriteCity.getLat() + favoriteCity.getLon() + "_forecast.json");
+                        }
+                    }
                 }
             }
             return null;
@@ -328,12 +348,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String getCityNameInputValue() {
+        String cityNameString = "";
+
         EditText cityNameInput = findViewById(R.id.cityNameInput);
-        if (cityNameInput != null && !cityNameInput.getText().toString().isEmpty()) {
-            return cityNameInput.getText().toString();
+        if (cityNameInput != null) {
+            cityNameString = cityNameInput.getText().toString();
         }
 
-        return cityName;
+        return cityNameString;
     }
 
     private void clearCityNameInput() {

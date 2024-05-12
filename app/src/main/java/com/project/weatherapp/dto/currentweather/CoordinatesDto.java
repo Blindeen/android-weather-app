@@ -1,14 +1,14 @@
 package com.project.weatherapp.dto.currentweather;
 
 public class CoordinatesDto {
-    private Float lon;
-    private Float lat;
+    private String lon;
+    private String lat;
 
-    public Float getLon() {
+    public String getLon() {
         return lon;
     }
 
-    public Float getLat() {
+    public String getLat() {
         return lat;
     }
 }

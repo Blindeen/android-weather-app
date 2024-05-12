@@ -14,9 +14,10 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.project.weatherapp.AppState;
 import com.project.weatherapp.R;
+import com.project.weatherapp.dto.geocode.GeocodeElementDto;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class FavoriteCitiesFragment extends BasicWeatherDataFragment {
     private boolean isSpinnerInitial = true;
@@ -37,11 +38,11 @@ public class FavoriteCitiesFragment extends BasicWeatherDataFragment {
         setSpinnerListener();
     }
 
-    private void updateUI(List<String> favoriteCities) {
+    private void updateUI(List<GeocodeElementDto> favoriteCities) {
         View view = getView();
         if (view != null) {
             Spinner spinner = view.findViewById(R.id.favoriteCitiesSpinner);
-            List<String> favoriteCitiesCopy = new ArrayList<>(favoriteCities);
+            List<String> favoriteCitiesCopy = favoriteCities.stream().map(GeocodeElementDto::getDisplayName).collect(Collectors.toList());
             favoriteCitiesCopy.add(0, "");
             ArrayAdapter<String> adapter = new ArrayAdapter<>(
                     requireContext(),
@@ -61,7 +62,12 @@ public class FavoriteCitiesFragment extends BasicWeatherDataFragment {
                 } else {
                     String selectedCity = spinner.getSelectedItem().toString();
                     if (!selectedCity.isEmpty()) {
-                        appState.setCurrentCity(selectedCity);
+                        List<GeocodeElementDto> favoriteCities = appState.getFavoriteCities().getValue();
+                        if (favoriteCities != null) {
+                            favoriteCities.stream()
+                                    .filter(city -> city.getDisplayName().equals(selectedCity))
+                                    .findFirst().ifPresent(selectedGeocode -> appState.setCurrentCityGeocode(selectedGeocode));
+                        }
                     }
                 }
             }

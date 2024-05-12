@@ -1,6 +1,7 @@
 package com.project.weatherapp.dto.currentweather;
 
 import com.project.weatherapp.dto.WeatherDescriptionDto;
+import com.project.weatherapp.dto.geocode.GeocodeElementDto;
 
 import java.util.List;
 
@@ -12,6 +13,7 @@ public class WeatherResponseDto {
     private Integer visibility;
     private List<WeatherDescriptionDto> weather;
     private WindDataDto wind;
+    private GeocodeElementDto geocodeElementDto;
 
     public String getName() {
         return name;
@@ -39,5 +41,13 @@ public class WeatherResponseDto {
 
     public WindDataDto getWind() {
         return wind;
+    }
+
+    public GeocodeElementDto getGeocodeElementDto() {
+        return geocodeElementDto;
+    }
+
+    public void setGeocodeElementDto(GeocodeElementDto geocodeElementDto) {
+        this.geocodeElementDto = geocodeElementDto;
     }
 }

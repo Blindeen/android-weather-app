@@ -27,6 +27,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.TimeZone;
 
 public class BasicWeatherDataFragment extends Fragment {
+    private WeatherResponseDto weatherResponseDto;
     protected Unit unit;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("E MMM dd");
     protected AppState appState;
@@ -52,7 +53,10 @@ public class BasicWeatherDataFragment extends Fragment {
                 setTemperature(view, weatherResponseDto);
             }
         });
-        appState.getWeatherData().observe(getViewLifecycleOwner(), this::updateUI);
+        appState.getWeatherData().observe(getViewLifecycleOwner(), value -> {
+            weatherResponseDto = value;
+            updateUI(value);
+        });
 
         TextView addToFavorites = view.findViewById(R.id.addToFavorites);
         addToFavorites.setOnClickListener(this::addFavoriteCityOnClick);
@@ -66,7 +70,7 @@ public class BasicWeatherDataFragment extends Fragment {
     }
 
     private void setBasicData(View view, WeatherResponseDto response) {
-        setTextViewValue(view, R.id.cityName, response.getName());
+        setTextViewValue(view, R.id.cityName, response.getGeocodeElementDto().getDisplayName());
         setDate(view, response);
         setWeatherIcon(view, response);
         setTextViewValue(view, R.id.weatherDescription, response.getWeather().get(0).getMain());
@@ -170,14 +174,8 @@ public class BasicWeatherDataFragment extends Fragment {
     }
 
     public void addFavoriteCityOnClick(View view) {
-        View root = getView();
-        if (root != null) {
-            TextView cityName = root.findViewById(R.id.cityName);
-            if (cityName != null) {
-                boolean additionResult = appState.addFavoriteCity(cityName.getText().toString());
-                String message = additionResult ? "City added to favorites!" : "City is already in favorites!";
-                displayToast(getContext(), message);
-            }
-        }
+        boolean additionResult = appState.addFavoriteCity(weatherResponseDto.getGeocodeElementDto());
+        String message = additionResult ? "City added to favorites!" : "City is already in favorites!";
+        displayToast(getContext(), message);
     }
 }
