@@ -7,8 +7,9 @@ public class Constants {
     public final static String UNITS = "metric";
     public final static String FAV_CITIES_KEY = "favorite_cities";
     public final static String SAVED_CITY_KEY = "saved_city";
+    public final static String SAVED_LAT_KEY = "saved_lat";
+    public final static String SAVED_LON_KEY = "saved_lon";
     public final static String SAVED_UNIT_KEY = "saved_unit";
-    public final static String DEFAULT_CITY = "Warsaw";
     public final static String SAVED_TIMESTAMP_KEY = "timestamp";
     public final static String SAVED_TAB_KEY = "selected_tab";
 }
