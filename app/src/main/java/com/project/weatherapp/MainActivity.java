@@ -353,6 +353,7 @@ public class MainActivity extends AppCompatActivity {
                     AlertDialog alertDialog = (AlertDialog) dialog;
                     int selectedPosition = alertDialog.getListView().getCheckedItemPosition();
                     if (selectedPosition != -1) {
+                        appState.setCurrentCityGeocode(currentCity);
                         fetchAllWeatherData();
                     } else {
                         displayToast(this, "No city selected");
