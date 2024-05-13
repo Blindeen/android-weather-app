@@ -11,4 +11,5 @@ public class Constants {
     public final static String SAVED_UNIT_KEY = "saved_unit";
     public final static String SAVED_TIMESTAMP_KEY = "timestamp";
     public final static String SAVED_TAB_KEY = "selected_tab";
+    public final static String SAVED_INPUT_VAL_KEY = "saved_input";
 }

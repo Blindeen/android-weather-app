@@ -122,6 +122,8 @@ public class MainActivity extends AppCompatActivity {
         if (tabLayout != null) {
             outState.putInt(Constants.SAVED_TAB_KEY, tabLayout.getSelectedTabPosition());
         }
+        EditText cityNameInput = findViewById(R.id.cityNameInput);
+        outState.putString(Constants.SAVED_INPUT_VAL_KEY, cityNameInput.getText().toString());
     }
 
     @Override
@@ -197,6 +199,9 @@ public class MainActivity extends AppCompatActivity {
                 tab.select();
             }
         }
+        String cityNameInputValue = savedInstanceState.getString(Constants.SAVED_INPUT_VAL_KEY);
+        EditText cityNameInput = findViewById(R.id.cityNameInput);
+        cityNameInput.setText(cityNameInputValue);
     }
 
     private void loadFavoriteCities() {
