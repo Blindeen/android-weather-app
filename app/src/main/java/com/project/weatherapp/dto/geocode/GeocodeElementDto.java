@@ -45,6 +45,10 @@ public class GeocodeElementDto {
         return name + ", " + (state != null ? (state + ", ") : "") + country;
     }
 
+    public String getAdditionalInfo() {
+        return (state != null ? (state + ", ") : "") + country;
+    }
+
     @NonNull
     @Override
     public String toString() {

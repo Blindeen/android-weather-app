@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.project.weatherapp.AppState;
 import com.project.weatherapp.R;
 import com.project.weatherapp.dto.currentweather.WeatherResponseDto;
+import com.project.weatherapp.dto.geocode.GeocodeElementDto;
 import com.project.weatherapp.enums.Unit;
 
 import java.time.Instant;
@@ -70,7 +71,10 @@ public class BasicWeatherDataFragment extends Fragment {
     }
 
     private void setBasicData(View view, WeatherResponseDto response) {
-        setTextViewValue(view, R.id.cityName, response.getGeocodeElementDto().getDisplayName());
+        GeocodeElementDto currentCityGeocodeInfo = response.getGeocodeElementDto();
+
+        setTextViewValue(view, R.id.cityName, currentCityGeocodeInfo.getName());
+        setTextViewValue(view, R.id.cityAdditionalInfo, currentCityGeocodeInfo.getAdditionalInfo());
         setDate(view, response);
         setWeatherIcon(view, response);
         setTextViewValue(view, R.id.weatherDescription, response.getWeather().get(0).getMain());

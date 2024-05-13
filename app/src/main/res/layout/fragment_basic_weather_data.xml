@@ -16,40 +16,55 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.3"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:layout_weight="0.6"
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/cityName"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
                 android:layout_weight="0.4"
-                android:autoSizeMaxTextSize="@dimen/h1_font_size"
-                android:autoSizeMinTextSize="10sp"
-                android:autoSizeTextType="uniform"
                 android:gravity="center"
-                android:text="Warsaw, Mazovia Voivodeship, PL"
-                android:textColor="#FFFFFF"
-                android:textColorLink="#FFFFFF"
-                android:textSize="@dimen/h1_font_size" />
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/cityName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/city_name"
+                    android:textColor="#FFFFFF"
+                    android:textColorLink="#FFFFFF"
+                    android:textSize="@dimen/h1_font_size" />
+
+                <Space
+                    android:layout_width="10sp"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/addToFavorites"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:text="@string/star_icon"
+                    android:textColor="#FFFFFF"
+                    android:textSize="@dimen/standard_font_size" />
+            </LinearLayout>
 
             <TextView
-                android:id="@+id/addToFavorites"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.1"
-                android:clickable="true"
-                android:gravity="left|center_vertical"
-                android:text="@string/star_icon"
+                android:id="@+id/cityAdditionalInfo"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.3"
+                android:gravity="center_horizontal"
+                android:text="Mazovian Voivodeship, PL"
                 android:textColor="#FFFFFF"
                 android:textSize="@dimen/standard_font_size" />
+
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.3"
+            android:layout_weight="0.2"
             android:gravity="center"
             android:orientation="horizontal">
 
@@ -65,7 +80,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.8"
+            android:layout_weight="0.6"
             android:gravity="center"
             android:orientation="horizontal">
 
