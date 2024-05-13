@@ -34,6 +34,16 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.8"
                 android:background="#FFFFFF" />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.2"
+                android:clickable="true"
+                android:text="@string/bin_icon"
+                android:textAlignment="center"
+                android:textSize="@dimen/standard_font_size" />
         </LinearLayout>
 
     </LinearLayout>
