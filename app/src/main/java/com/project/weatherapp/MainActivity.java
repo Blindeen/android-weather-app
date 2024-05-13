@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioGroup;
-import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -31,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -172,8 +170,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void configTextInputListener() {
         EditText cityNameInput = findViewById(R.id.cityNameInput);
-        TextView actionButton = findViewById(R.id.actionButton);
-        if (cityNameInput != null && actionButton != null) {
+        if (cityNameInput != null) {
             cityNameInput.addTextChangedListener(new CityNameInputListener(this));
         }
     }
@@ -271,11 +268,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void saveDataForFavoriteCity(Object response, String filenameEnding) {
         List<GeocodeElementDto> favoriteCities = appState.getFavoriteCities().getValue();
-        if (favoriteCities != null) {
-            for (GeocodeElementDto favoriteCity : favoriteCities) {
-                if (Objects.equals(favoriteCity.getLat(), currentCity.getLat()) && Objects.equals(favoriteCity.getLon(), currentCity.getLon())) {
-                    saveWeatherDataJSON(this, response, favoriteCity.getLat() + favoriteCity.getLon() + filenameEnding);
-                }
+        if (favoriteCities == null) {
+            return;
+        }
+
+        for (GeocodeElementDto favoriteCity : favoriteCities) {
+            if (currentCity.equals(favoriteCity)) {
+                saveWeatherDataJSON(this, response, favoriteCity.getLat() + favoriteCity.getLon() + filenameEnding);
             }
         }
     }
@@ -306,14 +305,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String getCityNameInputValue() {
-        String cityNameString = "";
-
         EditText cityNameInput = findViewById(R.id.cityNameInput);
-        if (cityNameInput != null) {
-            cityNameString = cityNameInput.getText().toString();
+        if (cityNameInput == null) {
+            return "";
         }
-
-        return cityNameString;
+        return cityNameInput.getText().toString();
     }
 
     private void clearCityNameInput() {
@@ -333,7 +329,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void onRefreshDataButtonClick(View view) {
         EditText cityNameInput = findViewById(R.id.cityNameInput);
-        if (cityNameInput != null && cityNameInput.getText().toString().isEmpty()) {
+        if (cityNameInput == null) {
+            return;
+        }
+
+        String cityNameInputValue = getCityNameInputValue();
+        if (cityNameInputValue.isEmpty()) {
             userActionDataRefresh();
         } else {
             fetchGeocodingData();
