@@ -141,11 +141,40 @@ public class MainActivity extends AppCompatActivity {
     private void initializeContext() {
         appState = new ViewModelProvider(this).get(AppState.class);
         appState.getCurrentCityGeocode().observe(this, city -> {
-            if (!currentCity.equals(city)) {
-                currentCity = city;
+            if (currentCity.equals(city)) {
+                return;
+            }
+
+            currentCity = city;
+            if (isNetworkAvailable(this)) {
                 userActionDataRefresh();
+            } else {
+                handleFavCityOldData();
             }
         });
+    }
+
+    private void handleFavCityOldData() {
+        String lat = currentCity.getLat();
+        String lon = currentCity.getLon();
+        String weatherFilename = String.format("%s%s_weather", lat, lon);
+        String forecastFilename = String.format("%s%s_forecast", lat, lon);
+
+        WeatherResponseDto favCityWeather;
+        ForecastResponseDto favCityForecast;
+        try {
+            favCityWeather = readWeatherDataJSON(this, weatherFilename, WeatherResponseDto.class);
+            favCityForecast = readWeatherDataJSON(this, forecastFilename, ForecastResponseDto.class);
+        } catch (IOException e) {
+            displayToast(this, "Cannot read favorite city data");
+            return;
+        }
+
+        appState.setWeatherData(favCityWeather);
+        appState.setForecastData(favCityForecast);
+        saveWeatherDataJSON(this, favCityWeather, WeatherResponseDto.class.getSimpleName() + ".json");
+        saveWeatherDataJSON(this, favCityForecast, ForecastResponseDto.class.getSimpleName() + ".json");
+        displayToast(this, "No internet connection. Old data has been loaded");
     }
 
     private void configRadioListener() {
