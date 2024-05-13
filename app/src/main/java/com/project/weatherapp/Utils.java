@@ -12,8 +12,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.weatherapp.dto.currentweather.ErrorResponseDto;
+import com.project.weatherapp.dto.geocode.GeocodeElementDto;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -117,5 +119,20 @@ public class Utils {
 
     public static String capitalizeString(String text) {
         return text != null ? text.substring(0, 1).toUpperCase() + text.substring(1) : "";
+    }
+
+    public static void deleteFavoriteCityFiles(Context context, GeocodeElementDto elementToDelete) {
+        File appPrivateDir = context.getFilesDir();
+        File[] files = appPrivateDir.listFiles();
+        if (files == null) {
+            return;
+        }
+
+        String filePrefix = String.format("%s%s", elementToDelete.getLat(), elementToDelete.getLon());
+        for (File file : files) {
+            if (file.getName().startsWith(filePrefix)) {
+                file.delete();
+            }
+        }
     }
 }
