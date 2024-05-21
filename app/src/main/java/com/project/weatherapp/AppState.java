@@ -12,16 +12,11 @@ import com.project.weatherapp.enums.Unit;
 import java.util.List;
 
 public class AppState extends ViewModel {
-    private final MutableLiveData<String> currentCityMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<GeocodeElementDto> currentCityGeocodeMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<WeatherResponseDto> weatherResponseMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<ForecastResponseDto> forecastResponseMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<Unit> temperatureUnitMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<GeocodeElementDto>> favoriteCitiesMutableLiveData = new MutableLiveData<>();
-
-    public void setCurrentCity(String city) {
-        currentCityMutableLiveData.postValue(city);
-    }
 
     public void setCurrentCityGeocode(GeocodeElementDto geocodeElementDto) {
         currentCityGeocodeMutableLiveData.postValue(geocodeElementDto);
