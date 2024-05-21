@@ -65,6 +65,7 @@ public class AppState extends ViewModel {
             }
 
             favoriteCities.add(0, city);
+            favoriteCitiesMutableLiveData.setValue(favoriteCities);
         }
 
         return true;
