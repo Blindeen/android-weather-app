@@ -180,6 +180,10 @@ public class BasicWeatherDataFragment extends Fragment {
     }
 
     public void addFavoriteCityOnClick(View view) {
+        if (weatherResponseDto == null) {
+            return;
+        }
+
         boolean additionResult = appState.addFavoriteCity(weatherResponseDto.getGeocodeElementDto());
         String message;
         if (additionResult) {
