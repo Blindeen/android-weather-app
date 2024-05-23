@@ -1,6 +1,7 @@
 package com.project.weatherapp.fragment;
 
 import static com.project.weatherapp.Utils.displayToast;
+import static com.project.weatherapp.Utils.saveWeatherDataJSON;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 import com.project.weatherapp.AppState;
 import com.project.weatherapp.R;
 import com.project.weatherapp.dto.currentweather.WeatherResponseDto;
+import com.project.weatherapp.dto.forecast.ForecastResponseDto;
 import com.project.weatherapp.dto.geocode.GeocodeElementDto;
 import com.project.weatherapp.enums.Unit;
 
@@ -179,7 +181,29 @@ public class BasicWeatherDataFragment extends Fragment {
 
     public void addFavoriteCityOnClick(View view) {
         boolean additionResult = appState.addFavoriteCity(weatherResponseDto.getGeocodeElementDto());
-        String message = additionResult ? "City added to favorites!" : "City is already in favorites!";
+        String message;
+        if (additionResult) {
+            message = "City added to favorites!";
+            saveDataForFavoriteCity();
+        } else {
+            message = "City is already in favorites!";
+        }
         displayToast(getContext(), message);
+    }
+
+    private void saveDataForFavoriteCity() {
+        WeatherResponseDto weatherData = appState.getWeatherData().getValue();
+        ForecastResponseDto forecastData = appState.getForecastData().getValue();
+
+        if (weatherData == null || forecastData == null) {
+            return;
+        }
+
+        String lat = weatherData.getGeocodeElementDto().getLat();
+        String lon = weatherData.getGeocodeElementDto().getLon();
+        String fileExtension = ".json";
+
+        saveWeatherDataJSON(getContext(), weatherData, lat + lon + "_weather" + fileExtension);
+        saveWeatherDataJSON(getContext(), forecastData, lat + lon + "_forecast" + fileExtension);
     }
 }
