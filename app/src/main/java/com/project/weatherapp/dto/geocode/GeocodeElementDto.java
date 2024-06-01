@@ -59,7 +59,7 @@ public class GeocodeElementDto {
     public boolean equals(Object obj) {
         if (obj instanceof GeocodeElementDto) {
             GeocodeElementDto other = (GeocodeElementDto) obj;
-            return this.name.equals(other.name) && this.lat.equals(other.lat) && this.lon.equals(other.lon) && this.country.equals(other.country) && this.state.equals(other.state);
+            return this.lat.equals(other.lat) && this.lon.equals(other.lon);
         }
         return false;
     }
